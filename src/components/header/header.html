@@ -1,5 +1,5 @@
   <ion-navbar color="primary" hideBackButton="{{hideBack}}">
-    <button ion-button menuToggle ><ion-icon name="menu"></ion-icon></button>
+    <button *ngIf="showMenu" ion-button menuToggle ><ion-icon name="menu"></ion-icon></button>
     <div class="_flex-box">
       <ion-title class="_ellipsis titleAdj">{{ title  }} </ion-title>
       <!-- <ion-icon name="chatboxes" isActive="true" class="_headerIcon" (click)="feedback()" margin-right float-right></ion-icon> -->

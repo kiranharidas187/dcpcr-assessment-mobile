@@ -82,7 +82,7 @@ export class HomePage {
     private localStorage: LocalStorageProvider
   ) {
     this.subscription = this.events.subscribe('localDataUpdated', () => {
-      this.getLocalSchoolDetails();
+      // this.getLocalSchoolDetails();
     });
 
     this.isIos = this.platform.is('ios') ? true : false;
@@ -90,7 +90,7 @@ export class HomePage {
   }
 
   ionViewWillEnter() {
-    this.onInit();
+    // this.onInit();
     if (this.network.type != 'none') {
       this.networkAvailable = true;
     }

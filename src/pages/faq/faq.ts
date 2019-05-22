@@ -131,13 +131,17 @@ export class FaqPage {
     {
       heading: `Where can I find the training and application manual?
       Find the  Assessor Training Manual here-`,
-      content: `<p><a href="https://docs.google.com/document/d/1difw6K1mkESMsNGXeWLsfKz_iaWzawI9IEsYBiZJzyM/edit?usp=sharing">https://docs.google.com/document/d/1difw6K1mkESMsNGXeWLsfKz_iaWzawI9IEsYBiZJzyM/edit?usp=sharing</a>
+      content: `<p  class="_flex-box _justify-content-center _cursor-pointer"><a href="https://docs.google.com/document/d/1difw6K1mkESMsNGXeWLsfKz_iaWzawI9IEsYBiZJzyM/edit?usp=sharing">
+      <button class="_cursor-pointer ">Click here to see the document</button>
+      </a>
       </p>`,
       images: []
     },
     {
       heading: `Find the Application Manual here-`,
-      content: `<p><a href="https://docs.google.com/document/d/1Tw3WvCQRonmWjICC8AXYd-2VwrIPEJDFsScTy_CC4Xk/edit?usp=sharing">https://docs.google.com/document/d/1Tw3WvCQRonmWjICC8AXYd-2VwrIPEJDFsScTy_CC4Xk/edit?usp=sharing</a>
+      content: `<p class="_flex-box _justify-content-center _cursor-pointer"><a href="https://docs.google.com/document/d/1Tw3WvCQRonmWjICC8AXYd-2VwrIPEJDFsScTy_CC4Xk/edit?usp=sharing">
+      <button class="_cursor-pointer">Click here to see the document</button>
+      </a>
       </p>`,
       images: []
     }

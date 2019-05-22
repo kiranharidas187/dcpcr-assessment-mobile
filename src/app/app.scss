@@ -21,6 +21,8 @@ $font-size-base: 14px;
 $font-size-large: 18px;
 $white-color : #fff;
 $blue-color: #488aff;
+$light-blue-color: rgb(155, 189, 248);
+
 $primary-color: $blue-color;
 $red-color: #DC143C;
 $orange-color: #FF8C00;
@@ -125,7 +127,9 @@ ion-content {
     font-size: 25px;
     cursor: pointer;
 }
-
+._cursor-pointer{
+    cursor: pointer;
+}
 ._container {
     flex-wrap: wrap;
     padding-bottom: 60px;

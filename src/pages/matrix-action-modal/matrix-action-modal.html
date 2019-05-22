@@ -17,9 +17,11 @@
     <div *ngFor="let instance of data?.value; let i = index">
       <ng-container *ngIf="selectedIndex ===i">
         <ng-container [ngSwitch]="question?.responseType" *ngFor="let question of instance; let j=index" margin-bottom>
-            <ion-item-divider color="light" *ngIf="question?.sectionHeader">
+          <hr margin-top *ngIf="question?.sectionHeader">
+            <ion-item-divider class="sectionBox" *ngIf="question?.sectionHeader">
               <h4  class="bold _flex-box sectionHeader"  text-wrap  >{{question?.sectionHeader}}</h4>
-              </ion-item-divider>
+            </ion-item-divider>
+          <hr margin-bottom *ngIf="question?.sectionHeader">
           <div class="_fullScreenCard" *ngIf="checkForVisibility(j)">
             <input-type [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
               [schoolId]="schoolId" *ngSwitchCase="'text'" [hideButton]="true"></input-type>

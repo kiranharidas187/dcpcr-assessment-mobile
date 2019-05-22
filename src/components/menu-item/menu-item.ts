@@ -23,7 +23,7 @@ export class MenuItemComponent {
   hideTeacherRegistry = true;
   hideLeaderRegistry=true;
   hideFeedback= true;
-
+  showMenuIcon = true;
   constructor(private navParams: NavParams, private ratingService: RatingProvider,
     private appCtrl: App, private viewCtrl: ViewController, private utils: UtilsProvider,
     private events: Events, private ngps: NetworkGpsProvider, private modalCntrl: ModalController,
@@ -35,6 +35,7 @@ export class MenuItemComponent {
     this.hideTeacherRegistry = this.navParams.get('hideTeacherRegistry');
     this.hideLeaderRegistry=this.navParams.get('hideLeaderRegistry');
     this.hideFeedback= this.navParams.get('hideFeedback');
+    // this.showMenuIcon = this.navParams.get('showMenuIcon');
     // this.parent = this.navParams.get("parent");
     this.programId = this.navParams.get("programId")
     this.subscription = this.events.subscribe('network:offline', () => {

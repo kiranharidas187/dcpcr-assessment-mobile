@@ -10,6 +10,7 @@ import { QuestionDashboardPage } from '../../pages/question-dashboard/question-d
 })
 export class HeaderComponent implements OnDestroy{
   @Input() title: string;
+  @Input() showMenu :boolean = true;
   @Input() showLogout: boolean;
   @Input() hideBack: boolean; 
   @Input() dashbordData: any;

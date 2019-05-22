@@ -35,20 +35,41 @@ export class InstitutionsEntityList {
     console.log('ionViewDidLoad InstitutionsEntityList');
     this.utils.startLoader();
     this.localStotrage.getLocalStorage('schools').then(schools => {
+      // this.schoolList = schools;
+      if (schools) {
       this.schoolList = schools;
+      console.log("school Local storage if loop")
+
+      } else {
+        this.getSchoolListApi();
+      console.log("school Local storage else loop" )
+
+      }
       this.utils.stopLoader();
     }).catch(error => {
+      console.log("no local storage" )
+
+      this.getSchoolListApi();
+
       this.utils.stopLoader();
+
     })
   }
 
   getSchoolListApi(): void {
-    this.utils.startLoader();
+    console.log("api list called")
+    // this.utils.startLoader();
     this.apiService.httpGet(SchoolConfig.getSchoolsOfAssessors, response => {
+      // console.log(JSON.stringify(response.result));
       this.schoolList = response.result;
       this.storage.set('schools', this.schoolList);
+      // this.localStotrage.setLocalStorage('schools',this.schoolList)
+
+      // this.utils.stopLoader();
+      
+
     }, error => {
-      this.utils.stopLoader();
+      // this.utils.stopLoader();
       if (error.status == '401') {
         this.appCtrl.getRootNav().push(WelcomePage);
       }
@@ -67,6 +88,9 @@ export class InstitutionsEntityList {
     this.schoolList[schoolIndex]['downloaded'] = true;
     this.localStotrage.setLocalStorage('schools', this.schoolList);
     this.apiService.httpGet(SchoolConfig.getSchoolDetails + this.schoolList[schoolIndex]['_id'], successData => {
+
+
+      console.log(JSON.stringify(successData));
       this.localStotrage.setLocalStorage("generalQuestions_" + this.schoolList[schoolIndex]['_id'], successData.result['assessments'][0]['generalQuestions']);
       this.localStotrage.setLocalStorage("generalQuestionsCopy_" + this.schoolList[schoolIndex]['_id'], successData.result['assessments'][0]['generalQuestions']);
       this.schoolList[schoolIndex]['downloaded'] = true;
