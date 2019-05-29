@@ -164,16 +164,17 @@ export class ApiProvider {
 
         successCallback(JSON.parse(data.data));
       }).catch(error => {
-        const errorDetails = JSON.parse(error['error']);
-        if (errorDetails.status === "ERR_TOKEN_INVALID") {
-          this.errorTokenRetryCount++;
-          this.OnTokenExpired(url, payload, successCallback, errorCallback, "post");
-        } else {
-          this.utils.openToast(error.message, 'Ok');
-          const errorObject = { ...this.errorObj };
-          errorObject.text = `API failed. URL: ${apiUrl}. Error  Details ${JSON.stringify(error)}. Payload: ${JSON.stringify(payload)}.`;
-          this.slack.pushException(errorObject);
-        }
+        this.httpError(error,successCallback,errorCallback,url,apiUrl);
+        // const errorDetails = JSON.parse(error['error']);
+        // if (errorDetails.status === "ERR_TOKEN_INVALID") {
+        //   this.errorTokenRetryCount++;
+        //   this.OnTokenExpired(url, payload, successCallback, errorCallback, "post");
+        // } else {
+        //   this.utils.openToast(error.message, 'Ok');
+        //   const errorObject = { ...this.errorObj };
+        //   errorObject.text = `API failed. URL: ${apiUrl}. Error  Details ${JSON.stringify(error)}. Payload: ${JSON.stringify(payload)}.`;
+        //   this.slack.pushException(errorObject);
+        // }
       })
     }).catch(error => {
       this.OnTokenExpired(url, payload, successCallback, errorCallback, "post");
@@ -196,18 +197,18 @@ export class ApiProvider {
         successCallback(JSON.parse(data.data));
         console.log("success data")
       }).catch(error => {
-
-        console.log(error)
-        const errorDetails = error['error'] ? JSON.parse(error['error']) : error ;
-        if (errorDetails.status === "ERR_TOKEN_INVALID") {
-          this.errorTokenRetryCount++;
-          this.OnTokenExpired(url, " ", successCallback, errorCallback, "get");
-        } else {
-          this.utils.openToast(error.message, 'Ok');
-          const errorObject = { ...this.errorObj };
-          errorObject.text = `API failed. URL: ${apiUrl}. Error  Details ${JSON.stringify(error)}`;
-          this.slack.pushException(errorObject);
-        }
+        this.httpError(error,successCallback,errorCallback,url,apiUrl);
+        // console.log(JSON.stringify(error))
+        // const errorDetails = error['error'] ? JSON.parse(error['error']) : error ;
+        // if (errorDetails.status === "ERR_TOKEN_INVALID") {
+        //   this.errorTokenRetryCount++;
+        //   this.OnTokenExpired(url, " ", successCallback, errorCallback, "get");
+        // } else {
+        //   this.utils.openToast(error.message ? error.message :"Some thing went wrong.", 'Ok');
+        //   const errorObject = { ...this.errorObj };
+        //   errorObject.text = `API failed. URL: ${apiUrl}. Error  Details ${JSON.stringify(error)}`;
+        //   this.slack.pushException(errorObject);
+        // }
       })
     }).catch(error => {
       this.OnTokenExpired(url, " ", successCallback, errorCallback, "get");
@@ -253,6 +254,22 @@ export class ApiProvider {
       });
 
     });
+  }
+
+
+  httpError(error,successCallback,errorCallback,url,apiUrl){
+    
+    console.log(JSON.stringify(error));
+    const errorDetails = error['error'] ? JSON.parse(error['error']) : error ;
+    if (errorDetails.status === "ERR_TOKEN_INVALID") {
+      this.errorTokenRetryCount++;
+      this.OnTokenExpired(url, " ", successCallback, errorCallback, "get");
+    } else {
+      this.utils.openToast(error.message ? error.message :"Some thing went wrong.", 'Ok');
+      const errorObject = { ...this.errorObj };
+      errorObject.text = `API failed. URL: ${apiUrl}. Error  Details ${JSON.stringify(error)}`;
+      this.slack.pushException(errorObject);
+    }
   }
 
 } 
