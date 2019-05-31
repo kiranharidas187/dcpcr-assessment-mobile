@@ -26,7 +26,8 @@
         "feedback": "Feedback",
         "update": "Update",
         "Leader": "School Leader",
-        "Teacher": "Teacher"
+        "Teacher": "Teacher",
+        "reports": "Reports"
     },
     "tabs": {
         "home": "Home",
@@ -37,8 +38,8 @@
         "rate": "Rate",
         "individual": "Individual",
         "institutional": "Institutions",
-        "observations":"Observations"
-
+        "observations":"Observations",
+        "dashboard":"Dashboard"
     },
     "headings": {
         "home": "Home",
@@ -72,7 +73,8 @@
         "LeaderRegistry": "School Leader Registry",
         "TeacherRegistry": "Teacher Registry",
         "generalQuestions": "General Questions",
-        "individualAssessments": "Individual Assessments"
+        "individualAssessments": "Individual Assessments",
+        "dashboard": "Dashboard"
     },
     "labels": {
         "welcome": "Welcome",

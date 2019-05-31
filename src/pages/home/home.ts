@@ -17,6 +17,7 @@ import { LocalStorageProvider } from '../../providers/local-storage/local-storag
 import { InstitutionsEntityList } from '../institutions-entity-list/institutions-entity-list';
 import { IndividualListingPage } from '../individual-listing/individual-listing';
 import { ObservationsPage } from '../observations/observations';
+import { DashboardsPage } from '../dashboards/dashboards';
 
 declare var cordova: any;
 
@@ -62,6 +63,13 @@ export class HomePage {
       component: ObservationsPage,
       active: false
     },
+    {
+      name: "dashboard",
+      subName: '',
+      icon: "analytics",
+      component: DashboardsPage,
+      active: false
+    }
    
   ]
 

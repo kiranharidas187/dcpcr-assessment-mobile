@@ -1,0 +1,30 @@
+<ion-header>
+  <header [title]="'headings.dashboard'|translate" [hideBack]="false">
+  </header>
+</ion-header>
+<ion-content padding>
+  <div padding>
+    <ion-segment [(ngModel)]="viewMode">
+      <ion-segment-button value="teacherWise">
+        Teacher wise
+      </ion-segment-button>
+      <ion-segment-button value="domainWise">
+        Domain wise
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+  <div *ngFor=" let chart of chartObject| slice:(viewMode === 'teacherWise' ? 0:1):(viewMode === 'teacherWise' ? 1:2)">
+    <highcharts-chart [Highcharts]="Highcharts" [options]="chart" style="width: 100%; height: 400px; display: block;"
+      [constructorType]="chartConstructor" [oneToOne]="oneToOneFlag" [runOutsideAngular]="runOutsideAngularFlag">
+    </highcharts-chart>
+  </div>
+  <div>
+    <button ion-button full (click)="openLearnerApp()" class="btnText">
+      <ion-icon name="open" margin-right></ion-icon>
+      Open Learner App
+    </button>
+    <!-- <a href="unnati://"> Open Learner App </a> -->
+    <!-- <a class="ion-home color-primary item" href="#" (click)=""> Dashboard</a> -->
+
+  </div>
+</ion-content>

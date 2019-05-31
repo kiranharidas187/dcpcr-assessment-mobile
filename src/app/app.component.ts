@@ -15,6 +15,7 @@ import { AboutPage } from '../pages/about/about';
 import { IndividualListingPage } from '../pages/individual-listing/individual-listing';
 import { UtilsProvider } from '../providers/utils/utils';
 import { ObservationsPage } from '../pages/observations/observations';
+import { DashboardsPage } from '../pages/dashboards/dashboards';
 
 @Component({
   templateUrl: 'app.html'
@@ -63,6 +64,13 @@ export class MyApp {
       name: "about",
       icon: "information-circle",
       component: AboutPage,
+      active: false
+    },
+    {
+      name: "dashboard",
+      subName: '',
+      icon: "analytics",
+      component: DashboardsPage,
       active: false
     }
   ]

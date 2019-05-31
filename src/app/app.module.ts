@@ -69,7 +69,8 @@ import { ProgramDetailsPage } from '../pages/program-details/program-details';
 import { InstitutionsEntityList } from '../pages/institutions-entity-list/institutions-entity-list';
 import { EntityProfilePageModule } from '../pages/entity-profile/entity-profile.module';
 import { ObservationsPageModule } from '../pages/observations/observations.module';
-
+import { DashboardsPage } from '../pages/dashboards/dashboards';
+import { HighchartsChartModule } from 'highcharts-angular';
 @NgModule({
   declarations: [
     MyApp,
@@ -88,9 +89,11 @@ import { ObservationsPageModule } from '../pages/observations/observations.modul
     GeneralQuestionPage,
     GeneralQuestionSubmitPage,
     IndividualListingPage,
-    ProgramDetailsPage
+    ProgramDetailsPage,
+    DashboardsPage
   ],
   imports: [
+    HighchartsChartModule,
     BrowserModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
@@ -137,7 +140,8 @@ import { ObservationsPageModule } from '../pages/observations/observations.modul
     GeneralQuestionPage,
     GeneralQuestionSubmitPage,
     IndividualListingPage,
-    ProgramDetailsPage
+    ProgramDetailsPage,
+    DashboardsPage
   ],
   providers: [
     StatusBar,

@@ -11,6 +11,7 @@ import { NetworkGpsProvider } from '../../providers/network-gps/network-gps';
 import { FeedbackProvider } from '../../providers/feedback/feedback';
 import { Network } from '@ionic-native/network';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { DashboardsPage } from '../dashboards/dashboards';
 
 @IonicPage()
 @Component({
@@ -160,28 +161,29 @@ export class SectionListPage {
   }
 
   checkForNetworkTypeAlert() {
-    if(this.network.type !== ('3g' || '4g' || 'wifi')){
-      let alert = this.alertCtrl.create({
-        title: 'Confirm',
-        message: 'You are connected to a slower data network. Image upload may take longer time. Do you want to continue?',
-        buttons: [
-          {
-            text: 'No',
-            role: 'cancel',
-            handler: () => {
-              console.log('Cancel clicked');
-            }
-          },
-          {
-            text: 'Yes',
-            handler: () => {
-              this.goToImageListing()
-            }
-          }
-        ]
-      });
-      alert.present();
-    }
+    // if(this.network.type !== ('3g' || '4g' || 'wifi')){
+    //   let alert = this.alertCtrl.create({
+    //     title: 'Confirm',
+    //     message: 'You are connected to a slower data network. Image upload may take longer time. Do you want to continue?',
+    //     buttons: [
+    //       {
+    //         text: 'No',
+    //         role: 'cancel',
+    //         handler: () => {
+    //           console.log('Cancel clicked');
+    //         }
+    //       },
+    //       {
+    //         text: 'Yes',
+    //         handler: () => {
+    //           this.goToImageListing()
+    //         }
+    //       }
+    //     ]
+    //   });
+    //   alert.present();
+    // }
+    this.demoSubmit();
   }
 
 
@@ -207,6 +209,14 @@ export class SectionListPage {
     }
     
 
+  }
+
+  demoSubmit() {
+    console.log(JSON.stringify(this.schoolData));
+    this.currentEvidence.isSubmitted = true;
+    this.localStorage.setLocalStorage(this.utils.getAssessmentLocalStorageKey(this.schoolId), this.schoolData);
+    this.navCtrl.pop();
+    this.utils.openToast("ECM submitted successfully");
   }
 
   submitEvidence() {
@@ -278,5 +288,15 @@ export class SectionListPage {
     if (this.navParams.get('parent')) {
       this.navParams.get('parent').onInit();
     }
+  }
+
+  goToDashboard() {
+    const params = {
+      selectedEvidenceId: this.currentEvidence._id,
+      _id: this.schoolId,
+      name: this.schoolName,
+      selectedEvidence: this.selectedEvidenceIndex,
+    }
+    this.navCtrl.push(DashboardsPage, params)
   }
 }

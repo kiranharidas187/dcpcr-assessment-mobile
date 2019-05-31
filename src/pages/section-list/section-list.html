@@ -48,3 +48,12 @@
     </ion-row>
   </ion-toolbar>
 </ion-footer>
+
+<ion-footer no-shadow *ngIf="currentEvidence?.isSubmitted">
+    <ion-toolbar position="bottom">
+      <ion-row>
+        <button ion-button full (click)="goToDashboard()">{{'buttons.view'|translate}} {{'buttons.reports'|translate}}
+         </button>
+      </ion-row>
+    </ion-toolbar>
+  </ion-footer>
