@@ -89,16 +89,18 @@ export class HomePage {
     private app: App,
     private localStorage: LocalStorageProvider
   ) {
-    this.subscription = this.events.subscribe('localDataUpdated', () => {
-      this.getLocalSchoolDetails();
-    });
+    // this.subscription = this.events.subscribe('localDataUpdated', () => {
+    //   this.getLocalSchoolDetails();
+    // });
 
     this.isIos = this.platform.is('ios') ? true : false;
 
   }
 
   ionViewWillEnter() {
-    this.onInit();
+    this.userData = this.currentUser.getCurrentUserData();
+
+    // this.onInit();
     if (this.network.type != 'none') {
       this.networkAvailable = true;
     }
@@ -288,7 +290,6 @@ export class HomePage {
         this.getParentRegistryForm();
       }
     })
-    this.userData = this.currentUser.getCurrentUserData();
     this.localStorage.getLocalStorage('schools').then(schools => {
       this.schoolList = schools;
     }).catch(error => {

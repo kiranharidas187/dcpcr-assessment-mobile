@@ -71,6 +71,7 @@ import { EntityProfilePageModule } from '../pages/entity-profile/entity-profile.
 import { ObservationsPageModule } from '../pages/observations/observations.module';
 import { DashboardsPage } from '../pages/dashboards/dashboards';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { AppAvailability } from '@ionic-native/app-availability';
 @NgModule({
   declarations: [
     MyApp,
@@ -176,7 +177,8 @@ import { HighchartsChartModule } from 'highcharts-angular';
     SlackProvider,
     Keyboard,
     LocalStorageProvider,
-    HTTP
+    HTTP,
+    AppAvailability
   ]
 })
 export class AppModule { }
