@@ -292,7 +292,7 @@ export class HomePage {
     this.localStorage.getLocalStorage('schools').then(schools => {
       this.schoolList = schools;
     }).catch(error => {
-      this.getSchoolListApi();
+      // this.getSchoolListApi();
     })
   }
 
