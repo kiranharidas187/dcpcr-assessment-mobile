@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, Platform } from 'ionic-angular';
 import * as Highcharts from 'highcharts';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { AppAvailability } from '@ionic-native/app-availability';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 @Component({
   selector: 'page-dashboards',
@@ -19,7 +21,10 @@ export class DashboardsPage {
   newResponse = [];
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
-    private utils: UtilsProvider, private localStorage: LocalStorageProvider
+    private utils: UtilsProvider, private localStorage: LocalStorageProvider,
+    public appAvailability :AppAvailability ,
+    public platform :Platform,
+    public iab : InAppBrowser
   ) {
     this.schoolId = this.navParams.get('_id');
     this.schoolName = this.navParams.get('name');
@@ -103,4 +108,55 @@ export class DashboardsPage {
     console.log('ionViewDidLoad DashboardsPage');
   }
 
+  openLearnerApp( ){
+    let appUrl = 'twitter://user?screen_name=' ;
+    // let appUrl = 'unnati://';
+    // let appUrl = 'community.shikshalokam.org/public/#!/course/do_3127730736811622401743';
+  let app: string;
+	if (this.platform.is('ios')) {
+    app = 'unnati://';
+    console.log("platform is ios");
+	} else if (this.platform.is('android')) {
+    app = 'io.ionic.starter';
+    console.log("platform is android");
+    
+  } 
+  // else {
+	// 	let browser = new InAppBrowser(httpUrl + username, '_system');
+	// 	return;
+	// }
+
+	this.appAvailability.check(app).then(
+		() => { // success callback
+      // let browser = this.iab.create('twitter://' , '_system');
+      this.iab.create(appUrl, '_system', 'location=no');
+      // window.open(appUrl, '_system', 'location=no');
+
+        console.log('Twitter is available');
+      
+		},
+		() => { // error callback
+      // let browser = this.iab.create('https://www.instagram.com/' , '_system');
+      // window.open('https://twitter.com/gajotres', '_system', 'location=no');
+        console.log('Twitter is not available');
+      
+		}
+	);
 }
+
+}
+
+
+
+
+// openInstagram(username: string) {
+// 	this.launchExternalApp('instagram://', 'com.instagram.android', 'instagram://user?username=', 'https://www.instagram.com/', username);
+// }
+
+// openTwitter(username: string) {
+// 	this.launchExternalApp('twitter://', 'com.twitter.android', 'twitter://user?screen_name=', 'https://twitter.com/', username);
+// }
+
+// openFacebook(username: string) {
+// 	this.launchExternalApp('fb://', 'com.facebook.katana', 'fb://profile/', 'https://www.facebook.com/', username);
+// }
