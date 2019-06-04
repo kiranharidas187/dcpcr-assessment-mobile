@@ -3,7 +3,7 @@
     <name>Samiksha</name>
     <description>A survey app for school development</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.1.5:8100" />
+    <content original-src="index.html" src="http://192.168.1.218:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -129,7 +129,9 @@
     <allow-navigation href="http://192.168.1.5:8100" />
     <allow-navigation href="http://192.168.1.2:8100" />
     <allow-navigation href="http://192.168.1.168:8100" />
-    <plugin name="ionic-plugin-deeplinks" spec="1.0.19">
+    <plugin name="cordova-plugin-appavailability" spec="~0.4.2" />
+    <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
+    <plugin name="ionic-plugin-deeplinks" spec="1.0.20">
         <variable name="URL_SCHEME" value="samiksha" />
         <variable name="DEEPLINK_SCHEME" value="https" />
         <variable name="DEEPLINK_HOST" value="shikshalokam.org" />
@@ -147,8 +149,6 @@
         <variable name="DEEPLINK_5_SCHEME" value=" " />
         <variable name="DEEPLINK_5_HOST" value=" " />
     </plugin>
-    <plugin name="cordova-plugin-appavailability" spec="~0.4.2" />
-    <plugin name="cordova-plugin-inappbrowser" spec="^3.0.0" />
     <engine name="browser" spec="5.0.4" />
     <engine name="ios" spec="4.5.5" />
     <engine name="android" spec="8.0.0" />
