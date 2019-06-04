@@ -16,6 +16,7 @@ import { IndividualListingPage } from '../pages/individual-listing/individual-li
 import { UtilsProvider } from '../providers/utils/utils';
 import { ObservationsPage } from '../pages/observations/observations';
 import { DashboardsPage } from '../pages/dashboards/dashboards';
+import { Deeplinks } from '@ionic-native/deeplinks';
 
 @Component({
   templateUrl: 'app.html'
@@ -88,7 +89,8 @@ export class MyApp {
     private events :Events,
     private networkGpsProvider: NetworkGpsProvider,
     private menuCntrl: MenuController,
-    private utils: UtilsProvider
+    private utils: UtilsProvider,
+    private deepLinks :Deeplinks
   ) {
     this.events.subscribe('navigateTab',data=>{
       console.log(data);
@@ -104,7 +106,7 @@ export class MyApp {
       this.allPages[0]['active']= true;
 
       }
-    })
+    });
 
     platform.ready().then(() => {
       // this.goToPage(0);
@@ -193,6 +195,24 @@ export class MyApp {
           page['active'] = false;
         }
         this.allPages[0]['active'] = true;
+        this.allPages[0]['active'] = true;
+        const paths = {
+          '/about-us': AboutPage,
+          '/home': HomePage,
+          '/individual': IndividualListingPage,
+          '/institutional': InstitutionsEntityList,
+          '/faq': FaqPage,
+        }
+        this.deepLinks.route( paths ).subscribe(match => {
+          this.rootPage = paths[match['$link']['path']];
+          console.log(JSON.stringify(match))
+          console.log('Successfully matched route', match);
+        }, nomatch => {
+          console.log(JSON.stringify(nomatch))
+          console.error('Got a deeplink that didn\'t match', nomatch);
+        });
+
+
         // this.splashScreen.hide()
         // this.statusBar.overlaysWebView(false);
       }

@@ -109,8 +109,8 @@ export class DashboardsPage {
   }
 
   openLearnerApp( ){
-    let appUrl = 'twitter://user?screen_name=' ;
-    // let appUrl = 'unnati://';
+    // let appUrl = 'twitter://user?screen_name=' ;
+    let appUrl = 'unnati://';
     // let appUrl = 'community.shikshalokam.org/public/#!/course/do_3127730736811622401743';
   let app: string;
 	if (this.platform.is('ios')) {
@@ -132,13 +132,13 @@ export class DashboardsPage {
       this.iab.create(appUrl, '_system', 'location=no');
       // window.open(appUrl, '_system', 'location=no');
 
-        console.log('Twitter is available');
+        console.log('Unnati is available');
       
 		},
 		() => { // error callback
       // let browser = this.iab.create('https://www.instagram.com/' , '_system');
       // window.open('https://twitter.com/gajotres', '_system', 'location=no');
-        console.log('Twitter is not available');
+        console.log('Unnati is not available');
       
 		}
 	);
