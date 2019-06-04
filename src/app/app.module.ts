@@ -72,6 +72,7 @@ import { ObservationsPageModule } from '../pages/observations/observations.modul
 import { DashboardsPage } from '../pages/dashboards/dashboards';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { AppAvailability } from '@ionic-native/app-availability';
+import { Deeplinks } from '@ionic-native/deeplinks';
 @NgModule({
   declarations: [
     MyApp,
@@ -178,7 +179,8 @@ import { AppAvailability } from '@ionic-native/app-availability';
     Keyboard,
     LocalStorageProvider,
     HTTP,
-    AppAvailability
+    AppAvailability,
+    Deeplinks
   ]
 })
 export class AppModule { }
