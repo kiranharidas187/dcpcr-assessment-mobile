@@ -66,13 +66,13 @@ export class MyApp {
       component: AboutPage,
       active: false
     },
-    {
-      name: "dashboard",
-      subName: '',
-      icon: "analytics",
-      component: DashboardsPage,
-      active: false
-    }
+    // {
+    //   name: "dashboard",
+    //   subName: '',
+    //   icon: "analytics",
+    //   component: DashboardsPage,
+    //   active: false
+    // }
   ]
 
   currentPage;

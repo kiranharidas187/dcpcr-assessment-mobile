@@ -23,7 +23,7 @@ export class DashboardsPage {
   graphResponse = [];
   domains = [];
   selectedTeacher;
-  seletedDomain;
+  selectedDomain;
   levels = {
     1:0,
     2:0,
@@ -66,7 +66,6 @@ export class DashboardsPage {
       this.getDomainsList();
       this.onTeacherChange(this.teachers[0]);
       this.onDomainChange(this.domains[0]);
-      this.seletedDomain = this.domains[0];
       this.selectedTeacher = this.teachers[0];
     }).catch(error => {
     });
@@ -87,6 +86,8 @@ export class DashboardsPage {
       }
       // }
     }
+    this.selectedDomain = this.domains[0];
+
     console.log(JSON.stringify(this.domains))
   }
 
@@ -175,7 +176,9 @@ export class DashboardsPage {
       }
     }
     for (const key of  Object.keys(this.levels) ) {
-      data[0].data.push(["Rating " + key, this.levels[key]])
+      if(this.levels[key]){
+        data[0].data.push(["Rating " + key, this.levels[key]])
+      }
     }
     console.log(data[0].data)
     this.chartObject[1].series[0]['data'] = data[0].data;

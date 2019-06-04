@@ -63,13 +63,13 @@ export class HomePage {
       component: ObservationsPage,
       active: false
     },
-    {
-      name: "dashboard",
-      subName: '',
-      icon: "analytics",
-      component: DashboardsPage,
-      active: false
-    }
+    // {
+    //   name: "dashboard",
+    //   subName: '',
+    //   icon: "analytics",
+    //   component: DashboardsPage,
+    //   active: false
+    // }
    
   ]
 

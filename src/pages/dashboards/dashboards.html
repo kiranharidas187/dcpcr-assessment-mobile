@@ -20,24 +20,38 @@
         <ion-option *ngFor="let teacher of teachers;let i = index" uppercase class="capitalize">{{teacher}}</ion-option>
       </ion-select>
     </ion-item>
-    <ion-item *ngIf="viewMode !== 'teacherWise'" >
+    <ion-item *ngIf="viewMode !== 'teacherWise'">
       <ion-label>Domains</ion-label>
       <ion-select [(ngModel)]="selectedDomain" (ionChange)="onDomainChange(selectedDomain)">
         <ion-option *ngFor="let domain of domains;let i = index" uppercase class="capitalize">{{domain}}</ion-option>
       </ion-select>
     </ion-item>
 
-    <highcharts-chart [(update)]="updateFlag"[Highcharts]="Highcharts" [options]="chart" style="width: 100%; height: 400px; display: block;"
-      [constructorType]="chartConstructor" [oneToOne]="oneToOneFlag" [runOutsideAngular]="runOutsideAngularFlag">
+    <highcharts-chart [(update)]="updateFlag" [Highcharts]="Highcharts" [options]="chart"
+      style="width: 100%; height: 400px; display: block;" [constructorType]="chartConstructor" [oneToOne]="oneToOneFlag"
+      [runOutsideAngular]="runOutsideAngularFlag">
     </highcharts-chart>
   </div>
-  <div>
+
+  <div margin-top>
+    <h3>Improvement Projects</h3>
+    <div>
+      <ion-list>
+        <ion-list-header>
+          Program 1
+        </ion-list-header>
+        <ion-item>Co-planning with teachers</ion-item>
+        <ion-item>Teachers’ Learning Exchange Mela</ion-item>
+      </ion-list>
+    </div>
+  </div>
+  <!-- <div>
     <button ion-button full class="btnText">
       <ion-icon name="open" margin-right></ion-icon>
       Open Learner App
     </button>
-    <!-- <a href="unnati://"> Open Learner App </a> -->
-    <!-- <a class="ion-home color-primary item" href="#" (click)=""> Dashboard</a> -->
+    <a href="unnati://"> Open Learner App </a>
+    <a class="ion-home color-primary item" href="#" (click)=""> Dashboard</a>
 
-  </div>
+  </div> -->
 </ion-content>
