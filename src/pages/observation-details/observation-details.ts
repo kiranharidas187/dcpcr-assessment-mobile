@@ -147,6 +147,7 @@ export class ObservationDetailsPage {
     }).catch(error => {
 
     });
+    
   }
 
 

@@ -7,6 +7,7 @@ import { EntityListPage } from '../../pages/observations/add-observation-form/en
 import { ApiProvider } from '../../providers/api/api';
 import { AppConfigs } from '../../providers/appConfig';
 import { TranslateService } from '@ngx-translate/core';
+import { AssessmentAboutPage } from '../../pages/assessment-about/assessment-about';
 
 /**
  * Generated class for the EntityListingComponent component.
@@ -54,38 +55,25 @@ export class ObservationEntityListingComponent {
 
 
   goToEcm(id, name) {
-    //console.log("go to ecm called");
+    console.log("i am here")
     let submissionId = id
     let heading = name;
-
-    
-
     this.localStorage.getLocalStorage(this.utils.getAssessmentLocalStorageKey(submissionId)).then(successData => {
-      
-      // //console.log(JSON.stringify(successData));
-    //console.log("go to ecm called");
-
-
       if (successData.assessment.evidences.length > 1) {
-
         this.navCtrl.push('EvidenceListPage', { _id: submissionId, name: heading })
-
       } else {
         if (successData.assessment.evidences[0].startTime) {
-          //console.log("if loop " + successData.assessment.evidences[0].externalId)
           this.utils.setCurrentimageFolderName(successData.assessment.evidences[0].externalId, submissionId)
           this.navCtrl.push('SectionListPage', { _id: submissionId, name: heading, selectedEvidence: 0 })
         } else {
 
           const assessment = { _id: submissionId, name: heading }
           this.openAction(assessment, successData, 0);
-          //console.log("else loop");
-
         }
       }
     }).catch(error => {
     });
-
+    // this.navCtrl.push('AssessmentAboutPage' , {data : {}})
   }
   openAction(assessment, aseessmemtData, evidenceIndex) {
     this.utils.setCurrentimageFolderName(aseessmemtData.assessment.evidences[evidenceIndex].externalId, assessment._id)
@@ -96,6 +84,7 @@ export class ObservationEntityListingComponent {
 
 
   getAssessmentDetailsOfCreatedObservation(programIndex,entityIndex,solutionId){
+     console.log("details here")
     this.getAssessmentDetailsEvent.emit({
       programIndex: programIndex,
       entityIndex: entityIndex,

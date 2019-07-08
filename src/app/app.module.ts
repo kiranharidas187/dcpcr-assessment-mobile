@@ -74,6 +74,7 @@ import { Deeplinks } from '@ionic-native/deeplinks';
 import { SolutionDetailsPage } from '../pages/solution-details/solution-details';
 import { IonicStepperModule } from 'ionic-stepper';
 import { ObservationProvider } from '../providers/observation/observation';
+import { AssessmentAboutPage } from '../pages/assessment-about/assessment-about';
 
 @NgModule({
   declarations: [
@@ -94,7 +95,8 @@ import { ObservationProvider } from '../providers/observation/observation';
     GeneralQuestionPage,
     GeneralQuestionSubmitPage,
     IndividualListingPage,
-    ProgramDetailsPage
+    ProgramDetailsPage,
+    AssessmentAboutPage
   ],
   imports: [
     BrowserAnimationsModule,
