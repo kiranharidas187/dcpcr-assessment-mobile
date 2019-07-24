@@ -1,12 +1,18 @@
-<div [formGroup]="form" *ngIf="form" >
+<div [formGroup]="form" >
 
-  <div *ngFor="let fromField of formFields">
-    <ion-list>
-      <ion-item *ngIf="(fromField?.input === 'text' || fromField?.input === 'number')&& fromField?.visible && checkForVisibility(fromField)">
+  <div *ngFor="let fromField of formFields;let first  = first">
+    <ion-list > 
+      {{first}}
+      <ion-item *ngIf="(fromField?.input === 'text' || fromField?.input === 'number')&& fromField?.visible && checkForVisibility(fromField) &&  !first">
         <ion-label floating>{{fromField?.label}}</ion-label>
-        <ion-input [formControlName]="fromField.field" [id]="fromField?.field" [type]="fromField?.input"></ion-input>
+        <ion-input  [formControlName]="fromField.field" [id]="fromField?.field" [type]="fromField?.input"></ion-input>
 
       </ion-item>
+        <ion-item *ngIf="(fromField?.input === 'text' || fromField?.input === 'number')&& fromField?.visible && checkForVisibility(fromField)  &&  first">
+          <ion-label floating>{{fromField?.label}}ggggg</ion-label>
+          <ion-input  #firstInput [formControlName]="fromField.field" [id]="fromField?.field" [type]="fromField?.input"></ion-input>
+  
+        </ion-item>
 
       <ion-item *ngIf="fromField?.input === 'radio' && fromField?.visible && checkForVisibility(fromField)">
         <ion-label>{{fromField?.label}}</ion-label>

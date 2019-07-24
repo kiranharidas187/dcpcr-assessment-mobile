@@ -1,11 +1,12 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, ViewChild, AfterViewChecked, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'dynamic-form',
   templateUrl: 'dynamic-form.html'
 })
-export class DynamicFormComponent implements OnChanges {
+export class DynamicFormComponent implements OnChanges,AfterViewChecked {
+  @ViewChild('firstInput') remarkInput ;
 
   @Input() formFields: any;
   @Input() form: FormGroup;
@@ -14,7 +15,11 @@ export class DynamicFormComponent implements OnChanges {
   constructor() {
     console.log('Hello DynamicFormComponent Component');
   }
-
+  ngAfterViewChecked() {
+    setTimeout(() => {
+      this.remarkInput._element.setFocus();
+    }, 500);
+  }
   createFormGroup(): any {
     let formGrp = {};
     this.formFields.forEach(formfield => {

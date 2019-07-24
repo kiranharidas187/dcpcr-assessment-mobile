@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, ɵConsole } from '@angular/core';
+import { Component, ViewChild, ElementRef, ɵConsole, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
 import { IonicPage, NavController, NavParams, ModalController, App, Config, Events } from 'ionic-angular';
 import { FormGroup, Validators } from '@angular/forms';
 import { ApiProvider } from '../../../providers/api/api';
@@ -13,6 +13,7 @@ import { Storage } from '@ionic/storage';
 import { AndroidPermissions } from '@ionic-native/android-permissions';
 import { AppConfigs } from '../../../providers/appConfig';
 import { TranslateService } from '@ngx-translate/core';
+import { DynamicFormComponent } from '../../../components/dynamic-form/dynamic-form';
 
 /**
  * Generated class for the AddObservationFormPage page.
@@ -28,7 +29,7 @@ export interface draftData {
   selector: 'page-add-observation-form',
   templateUrl: 'add-observation-form.html',
 })
-export class AddObservationFormPage {
+export class AddObservationFormPage  implements AfterViewInit{
   addObservationData;
   addObservationForm: FormGroup;
   selectedFrameWork;
@@ -50,6 +51,9 @@ export class AddObservationFormPage {
   solutionLimit: number = 100;
   solutionPage: number = 1;
   totalCount: number = 0;
+
+  @ViewChildren(DynamicFormComponent) childrenComponent: QueryList<DynamicFormComponent>;
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -72,7 +76,30 @@ export class AddObservationFormPage {
 
 
   }
+  public ngAfterViewInit(): void
+  {
+    this.childrenComponent.changes.subscribe((comps: QueryList<DynamicFormComponent>) =>
+    {
+      // Now you can access to the child component
+      console.log(JSON.stringify(comps.toArray()))
+      console.log("CHILDREN start")
+      let jokes: DynamicFormComponent[] = this.childrenComponent.toArray(); 
+      // JSON.stringify( jokes, function( key, value) {
+      
+      //   return value;
+      // })
+      // this.childrenComponent['remarkInput']
 
+      console.log(JSON.stringify(jokes))
+      console.log("CHILDREN end")
+      
+      if(jokes[0].){
+
+      }
+      //  jokes[0].remarkInput.setFocus();
+
+    });
+  }
   ionViewDidLoad() {
     console.log('ionViewDidLoad AddObservationPage');
     this.utils.startLoader();
@@ -202,8 +229,19 @@ export class AddObservationFormPage {
     this.utils.startLoader();
     this.apiProviders.httpGet(AppConfigs.cro.getSolutionAccordingToType + this.entityType + "?search="+this.searchSolutionUrl+"&limit="+this.solutionLimit+"&page="+this.solutionPage, success => {
       // console.log(JSON.stringify(success.result[0].data))
-      this.listOfSolution = event ? [...this.listOfSolution ,...success.result[0].data] :[...success.result[0].data];
-      this.totalCount = success.result[0].count;
+      // this.listOfSolution = event ? [...this.listOfSolution ,...success.result[0].data] :[...success.result[0].data];
+      // this.totalCount = success.result[0].count;
+      // console.log(JSON.stringify(this.listOfSolution))
+      // if (this.editData && this.editData.data.solutionId) {
+      //   this.listOfSolution.forEach(element => {
+      //     if (element._id === this.editData.data.solutionId)
+      //       this.selectedFrameWork = element._id;
+      //   });
+      // }
+
+
+      this.listOfSolution = event ? [...this.listOfSolution ,...success.result] :[...success.result];
+      // this.totalCount = success.result[0].count;
       console.log(JSON.stringify(this.listOfSolution))
       if (this.editData && this.editData.data.solutionId) {
         this.listOfSolution.forEach(element => {

@@ -18,7 +18,7 @@
 
 <div margin-top>
   <ion-item text-center no-padding>
-    <ion-input type="{{data?.responseType}}" (input)="isaNumber()" (keyup.enter) = "keyboard.hide()" [(ngModel)]="data.value" (ngModelChange)="checkForValidation()"></ion-input>
+    <ion-input  type="{{data?.responseType}}" (input)="isaNumber()" (keyup.enter) = "keyboard.hide()" [(ngModel)]="data.value" (ngModelChange)="checkForValidation()"></ion-input>
   </ion-item>
   <div *ngIf="!notNumber" class="_errorMsg">{{getErrorMsg()}}</div>
 
