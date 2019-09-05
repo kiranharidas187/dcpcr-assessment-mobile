@@ -1,0 +1,43 @@
+<ion-header>
+  <header [title]="'headings.about'|translate" [hideBack]="false" [showMenu]="false">
+  </header>
+</ion-header>
+
+
+
+<ion-content padding>
+  <ion-item-group *ngIf="data">
+    <ion-item-divider color="light">
+      <h4 class="bold" text-wrap text-capitalize> {{data?.name}} </h4>
+    </ion-item-divider>
+
+    <ion-item class="_flex-box _justify-content-space-between">
+      <h3>{{'headings.startDate' | translate}}</h3>
+      {{data?.startDate | date}}
+    </ion-item>
+
+    <ion-item class="_flex-box _justify-content-space-between">
+      <h3>{{'headings.endDate' | translate}}</h3>
+      {{data?.endDate | date}}
+    </ion-item>
+    <ion-item padding>
+      <h1>{{'headings.description' | translate}}</h1>
+      <ion-row>
+        {{data?.description}}
+      </ion-row>
+    </ion-item>
+  </ion-item-group>
+
+</ion-content>
+<ion-footer no-shadow>
+  <ion-toolbar class="_toolbar-background-md" position="bottom">
+    <ion-row>
+      <ion-col>
+        <button ion-button full (click)="goToEntity()" class="btnText">
+          {{'buttons.goToEntities' | translate}}
+          <ion-icon name="arrow-forward" margin-left></ion-icon>
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

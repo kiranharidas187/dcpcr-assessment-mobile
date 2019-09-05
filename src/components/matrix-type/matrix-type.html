@@ -1,6 +1,14 @@
 <div>
   <ion-col class="_flex-box _justify-content-center _flex-direction-column ">
-    <h4 [ngClass] = "{'_validQuestion': data?.completedInstance?.length && (data?.completedInstance?.length === data?.value?.length)}" *ngFor="let question of data.question">{{question}}</h4>
+    <h4 [ngClass] = "{'_validQuestion': data?.completedInstance?.length && (data?.completedInstance?.length === data?.value?.length)}"  >
+      <!-- <div class="noWrap">{{inputIndex}} .</div> 
+      <div padding-left>
+        <div class="wrapText" *ngFor="let question of data.question"> 
+        {{question}} 
+        </div> 
+      </div> -->
+      <question-heading [inputIndex]="inputIndex" [data]="data"></question-heading>
+    </h4>
   </ion-col>
   <div class="_tip _flex-box "> {{data?.tip}}</div>
   <div>
@@ -10,8 +18,9 @@
 
   <ion-list>
     <div ion-item text-capitalize class="_flex-box" *ngFor="let instance of data?.value; let i = index" >
-      <div class="_flex-box" (click)="viewInstance(i)">
+      <div class="_flex-box conatiner" (click)="viewInstance(i)" >
           <span [ngClass] = "{'_validQuestion': data?.completedInstance?.includes(i)}"  style="flex:1"> {{data?.instanceIdentifier}} {{i+1}}</span>
+          <span class="modified" *ngIf="getLastModified(instance)">Last Modified {{getLastModified(instance)|date:'shortTime'}} {{getLastModified(instance)|date:'mediumDate'}} </span>
       </div>
       <ion-icon name="trash" class="deletOption" item-end margin-right (click)="deleteInstanceAlert(i)"></ion-icon>      
     </div>

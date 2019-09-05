@@ -22,7 +22,7 @@
 
 
 <ion-header>
-  <header [title]="'headings.myInstitutions'|translate" [hideBack]="true">
+  <header [title]="'headings.myInstitutions'|translate" [hideBack]="false">
 
   </header>
 </ion-header>
@@ -91,14 +91,13 @@
         refreshingText="Refreshing...">
       </ion-refresher-content>
     </ion-refresher>
-<entity-listing *ngIf="programs"
-[entityList]="programs"  
-[entityType]="'observations'" 
-(getAssessmentDetailsEvent)="getAssessmentDetails($event)"
+<program-listing *ngIf="programs"
+[programList]="programs"  
+[assessmentlocalStorageName]="assessmentlocalStorageName"
+[entityType]="'institutional'" 
 (refreshEvent)="refresh($event)"
-(openMenuEvent)="openMenu($event)"
 >
-</entity-listing>
+</program-listing>
 </ion-content>
 <ion-footer no-shadow>
   <ion-toolbar class="_toolbar-background-md" position="bottom">

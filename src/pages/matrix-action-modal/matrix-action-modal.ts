@@ -9,7 +9,7 @@ import { UtilsProvider } from '../../providers/utils/utils';
   templateUrl: 'matrix-action-modal.html',
 })
 export class MatrixActionModalPage {
-
+  inputIndex : any;
   instanceDetails: any;
   selectedIndex: any;
   data: any;
@@ -26,6 +26,7 @@ export class MatrixActionModalPage {
     this.evidenceId = navParams.data.evidenceId;
     this.generalQuestion = navParams.data.generalQuestion;
     this.submissionId = navParams.data.submissionId;
+    this.inputIndex = navParams.data.questionIndex;
   }
 
   ionViewDidLoad() {

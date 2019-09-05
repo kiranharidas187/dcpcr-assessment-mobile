@@ -1,0 +1,15 @@
+question-heading {
+    .flexbox{
+        display: flex;
+        align-items: baseline;
+        flex-wrap: nowrap;
+    }
+    .noWrap{
+        white-space: nowrap;
+        width: fit-content;
+        
+    }
+    .wrapText{
+        white-space:wrap;
+    }
+}

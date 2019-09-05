@@ -1,17 +1,31 @@
 <ion-col class="_flex-box _justify-content-center _flex-direction-column ">
-  <h4 [ngClass]="{'_validQuestion': data?.value}" *ngFor="let question of data.question">{{question}}</h4>
+  <h4 [ngClass]="{'_validQuestion': data?.value}" class="flexbox">
+    <!-- <div class="noWrap">{{inputIndex}} .</div> <div padding-left>
+      <div  *ngFor="let question of data.question"> 
+      {{question}} 
+    </div> 
+    </div> -->
+    <question-heading [inputIndex]="inputIndex" [data]="data"></question-heading>
+
+  </h4>
 </ion-col>
 <div class="_tip _flex-box "> {{data?.tip}}</div>
 
-<ion-list radio-group margin-top [(ngModel)]="data.value" text-wrap (ionchange)="checkForCompletion()" (ngModelChange)="checkForValidation()">
+<ion-list radio-group margin-top [(ngModel)]="data.value" text-wrap (ionchange)="checkForCompletion()"
+  (ngModelChange)="checkForValidation()">
   <ion-item *ngFor="let option of data?.options">
-    <ion-label>{{option?.label}}</ion-label>
+    <ion-label class="_flex-box label" text-wrap>
+      <ion-icon name="bulb" class="help" (click)="openHint(option?.hint)" *ngIf="option?.hint"></ion-icon>
+      <div style="flex: 1" [ngStyle]="{'margin-left': option?.hint ? '35px' :'0px'}"> {{option?.label}} </div>
+    </ion-label>
     <ion-radio value="{{option?.value}}"></ion-radio>
   </ion-item>
 </ion-list>
 <remarks *ngIf="data?.showRemarks" [data]="data"></remarks>
-<image-upload *ngIf="data?.file" [submissionId]="submissionId" [data]="data" [generalQuestion]="generalQuestion" [imageLocalCopyId]="imageLocalCopyId" [evidenceId]="evidenceId" [schoolId]="schoolId"></image-upload>
-
+<!-- {{data?.fileName?.length}} -->
+<image-upload  [submissionId]="submissionId" [data]="data" [generalQuestion]="generalQuestion" [imageLocalCopyId]="imageLocalCopyId" [evidenceId]="evidenceId" [schoolId]="schoolId"></image-upload>
+<!-- *ngIf="data.allowAudioRecording" -->
+<!-- (audioAddedEvent)="updateData($event)" -->
 <!-- <ion-footer no-shadow>
   <ion-toolbar position="bottom">
     <ion-row>

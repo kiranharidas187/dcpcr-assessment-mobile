@@ -55,14 +55,13 @@
         refreshingText="Refreshing...">
       </ion-refresher-content>
     </ion-refresher>
-<entity-listing *ngIf="programs"
-[entityList]="programs"  
-[entityType]="'assessments'" 
-(getAssessmentDetailsEvent)="getAssessmentDetails($event)"
-(refreshEvent)="refresh($event)"
-[showMenu]="false"
->
-</entity-listing>
+    <program-listing *ngIf="programs"
+    [programList]="programs"  
+    [assessmentlocalStorageName]="assessmentlocalStorageName"
+    [entityType]="'individual'" 
+    (refreshEvent)="refresh($event)"
+    >
+    </program-listing>
 </ion-content>
 <ion-footer no-shadow>
   <ion-toolbar class="_toolbar-background-md" position="bottom">

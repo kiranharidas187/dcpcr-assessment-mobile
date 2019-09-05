@@ -37,15 +37,43 @@
           </span>
         </h3>
       </ion-item>
+ 
+
     </ng-container>
   </ion-item-group>
+
+  <!-- <ion-card>
+    <ion-card-header>
+      {{'headings.description' | translate}}
+    </ion-card-header>
+    <ion-card-content>
+      {{currentEvidence?.description}}
+    </ion-card-content>
+  </ion-card> -->
+
+  <div margin class="border-radius" *ngIf="currentEvidence?.description">
+    <h2 padding-left>{{'headings.description' | translate}}</h2>
+    <div padding-left padding-right padding-bottom>
+        {{currentEvidence?.description}}
+    </div>
+  </div>
 </ion-content>
 
-<ion-footer no-shadow *ngIf="(allAnsweredForEvidence && !currentEvidence.isSubmitted) || currentEvidence?.enableSubmit">
+<ion-footer no-shadow  *ngIf="((allAnsweredForEvidence && !currentEvidence.isSubmitted) || currentEvidence?.enableSubmit) && !sectionData?.observation">
   <ion-toolbar position="bottom">
     <ion-row>
       <button ion-button full (click)="checkForNetworkTypeAlert()">{{'buttons.upload'|translate}} {{'buttons.and'|translate}}
         {{'buttons.submit'|translate}}</button>
+
     </ion-row>
   </ion-toolbar>
 </ion-footer>
+
+<ion-footer no-shadow *ngIf="sectionData?.observation" >
+    <ion-toolbar position="bottom">
+      <ion-row>
+          <button ion-button full (click)="previewSubmission()">
+            {{'buttons.preview'|translate}}</button>
+      </ion-row>
+    </ion-toolbar>
+  </ion-footer>

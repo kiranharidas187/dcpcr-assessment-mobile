@@ -7,4 +7,27 @@ matrix-type {
     .deletOption {
         color: $dark-grey-color;
     }
+    .modified {
+        color: $dark-grey-color;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+    .conatiner{
+        flex-direction: column; 
+        align-items:flex-start; 
+        flex:1
+    }
+    // .flexbox{
+    //     display: flex;
+    //     align-items: baseline;
+    //     flex-wrap: nowrap;
+    // }
+    // .noWrap{
+    //     white-space: nowrap;
+    //     width: fit-content;
+        
+    // }
+    // .wrapText{
+    //     white-space:wrap;
+    // }
 }

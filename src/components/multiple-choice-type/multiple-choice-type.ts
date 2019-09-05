@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { HintProvider } from '../../providers/hint/hint';
 
 @Component({
   selector: 'multiple-choice-type',
@@ -19,8 +20,8 @@ export class MultipleChoiceTypeComponent implements OnInit {
   @Input() imageLocalCopyId: string;
   @Input() generalQuestion: boolean;
   @Input() submissionId: any;
-  
-  constructor(private utils: UtilsProvider) {
+  @Input() inputIndex ;
+  constructor(private utils: UtilsProvider,  private hintService: HintProvider) {
     console.log('Hello checkboxTypeComponent Component');
     this.text = 'Hello World';
 
@@ -62,6 +63,10 @@ export class MultipleChoiceTypeComponent implements OnInit {
     this.data.isCompleted = this.utils.isQuestionComplete(this.data);
     this.data.endTime = this.data.isCompleted ? Date.now() : "";
 
+  }
+
+  openHint(hint){
+    this.hintService.presentHintModal({hint: hint});
   }
 
 }

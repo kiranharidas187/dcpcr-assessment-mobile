@@ -24,6 +24,11 @@
         </button>
       </ion-col>
       <ion-col>
+        <!-- {{completedQuestionCount}} {{questionCount}} -->
+        <progress-bar [progress] = "percentage" [total]="questionCount" [showTracker]="true" [completed]="completedQuestionCount" class="_full-width"></progress-bar>
+
+      </ion-col>
+      <ion-col>
         <button ion-button icon-end float-right color="light" (click)="next()" *ngIf="!isLast">{{'buttons.next'|
           translate}} <ion-icon name="arrow-forward"></ion-icon></button>
         <button ion-button icon-start float-right color="light" (click)="next('completed')" *ngIf="isLast">

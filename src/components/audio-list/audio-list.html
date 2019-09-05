@@ -1,0 +1,7 @@
+<div *ngIf="audioList">
+    <ion-item >
+        <p>{{audioList.name}}</p>
+        <button ion-button clear item-end large (click)="playAudioFunc(audioList.filename, i)"><ion-icon  *ngIf="!playFlag" name="play"></ion-icon><ion-icon  *ngIf="playFlag" name="pause"></ion-icon></button>
+        <button ion-button clear item-end large (click)="delete(audioList.filename, i)"><ion-icon name="trash"></ion-icon></button>
+      </ion-item>
+</div>

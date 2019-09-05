@@ -1,17 +1,43 @@
-<div class="_flex-box" margin-top  style="flex-wrap: wrap;">
+<div class="_flex-box" margin-top style="flex-wrap: wrap;">
+  <!-- <fa-icon name="camera-retro"></fa-icon> -->
 
-  <div class="_cards _flex-box _justify-content-center _flex-direction-column" padding>
+  <div  *ngIf="datas?.file" class="_cards _flex-box _justify-content-center _flex-direction-column" padding>
     <ion-icon name="add" class="_iconAdj"></ion-icon>
-    <div>{{'labels.image'|translate}}</div>
+    <div>{{'labels.files'|translate}}</div>
     <div class="_overlay" (click)="openActionSheet()"></div>
   </div>
 
-  <div class="_cards _flex-box  _justify-content-center" *ngFor="let image of imageList; let i = index">
+  <div class="_cards _flex-box  _justify-content-center" *ngFor="let image of imageList; let i = index" >
     <ion-icon name="trash" class="_closeBtn" (click)="deleteImageAlert(i)"></ion-icon>
-    <div class="_overlay"></div>
+    <div class="_overlay" (click)="previewFile(image?.imageName,image?.extension)"></div>
     <img src="{{image?.data}}">
+    <span>
+      <fa name="file-pdf-o" class="attachmentIcon" *ngIf="pdfFormats.includes(image?.extension)"></fa>
+      <fa name="file-word-o" class="attachmentIcon" *ngIf="wordFormats.includes(image?.extension)"></fa>
+      <fa name="file-audio-o" class="attachmentIcon" *ngIf="audioFormats.includes(image?.extension)"></fa>
+      <fa name="file-video-o" class="attachmentIcon" *ngIf="videoFormats.includes(image?.extension)"></fa>
+      <fa name="file-powerpoint-o" class="attachmentIcon" *ngIf="pptFormats.includes(image?.extension)"></fa>
+      <fa name="file-excel-o" class="attachmentIcon" *ngIf="spreadSheetFormats.includes(image?.extension)"></fa>
+    </span>
   </div>
-
+  <ion-card *ngIf="datas?.allowAudioRecording">
+    <ion-card-content>
+      <ion-row *ngIf="!recording">
+          <button ion-button primary (click)="startRecord()">
+            <ion-icon name="mic"></ion-icon>&nbsp;&nbsp;Start Record
+          </button>
+      </ion-row>
+      <ion-row *ngIf="recording" class="_flex-box _justify-content-space-between">
+          <button ion-button primary (click)="stopRecord()">
+            <ion-icon name="mic-off"></ion-icon>&nbsp;&nbsp;Stop Record
+          </button>
+       
+         <h1>
+           <span *ngIf="minutes < 10">0</span>{{minutes}} :  <span *ngIf="seconds < 10">0</span>{{seconds}}
+         </h1>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
 </div>
 <!-- <div *ngIf="imageList?.length <= data?.file?.minCount">
   Min {{data?.file?.minCount}} images required

@@ -1,0 +1,49 @@
+<!--
+  Generated template for the SubmissionListPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+    <header [title]="'headings.submissionListPage'|translate" [hideBack]="false">
+    </header>
+  </ion-header>
+
+<ion-content padding >
+  <div *ngIf="submissionList">
+      <ion-item *ngFor="let submission of submissionList ; let i = index" class="_flex-box _justify-content-space-between" >
+          {{submission?.download}}
+          <div class="_flex-box" (click)="submission?.downloaded === true ? goToEcm(i) : getAssessmentDetails(i)">
+
+        <!-- <div class="_flex-box"> -->
+          <div style="flex:1" text-capitalize>
+            {{submission?.createdAt | date :'medium'}} 
+          </div>
+          <ion-icon name="cloud-download" class="downloadIcon" 
+          *ngIf="!submission?.downloaded && (submission.status === 'started')"></ion-icon>
+
+          <!-- <div float-right *ngIf="submission.status === 'completed' && !evidence?.notApplicable"
+          class="_submitted _flex-box">
+
+          {{'labels.submitted'|translate}} <ion-icon name="cloud-done" class="_progressIcon" margin-left></ion-icon>
+        </div> -->
+        <ion-icon *ngIf="submission?.status == 'completed'" name="eye" class="completed" (click) ="$event.stopPropagation() ; actions(submission?._id, 'preview') "margin-left></ion-icon>
+        <ion-icon *ngIf="submission?.status == 'completed'" name="share-alt" class="completed" margin-left (click) ="actions(submission?._id, 'share') ;  $event.stopPropagation();"></ion-icon>
+        <!-- <ion-icon *ngIf="submission?.downloaded && !(submission.status === 'completed')" name="arrow-forward" class="_progressIcon" margin-left></ion-icon> -->
+        <ion-icon *ngIf="!(submission.status === 'completed')" name="trash" class="downloadIcon" margin-left (click) ="$event.stopPropagation() ; deleteSubmission(submission?._id) "></ion-icon>
+
+        </div>
+      </ion-item>
+  </div>
+  <div *ngIf="!(submissionList?.length > 0)" class="_flex-box _justify-content-center">
+    {{'message.noSubmission'|translate}}
+  </div>
+</ion-content>
+<ion-footer no-shadow  >
+  <ion-toolbar position="bottom">
+    <ion-row>
+        <button ion-button full (click)="observeAgain()">
+          {{'buttons.observeAgain'|translate}}</button>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

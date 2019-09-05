@@ -1,0 +1,23 @@
+page-preview {
+    .question {
+        font-weight: 500
+    }
+    .answer {
+
+    }
+    .instanceQuest {
+        background: $grey-color;
+        border: 1px solid $dark-grey-color;
+        padding: 10px;
+        margin: 2px 0;
+        border-radius: 2px;
+    }
+    .instacnce {
+        margin: 10px 0;
+        font-weight: 600 !important;
+    }
+
+    .matrixQuestion {
+        margin: 20px 0;
+    }
+}

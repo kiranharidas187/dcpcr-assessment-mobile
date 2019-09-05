@@ -14,10 +14,10 @@ export class LocalStorageProvider {
   }
 
   getLocalStorage(key) : Promise<any>{
-    console.log(key)
+    // console.log(key)
     return new Promise((resolve, reject) => {
       this.storage.get(key).then( data => {
-        console.log(data)
+        // console.log(data)
         if(data) {
           resolve(data)
         } else {

@@ -10,9 +10,10 @@
 
 <ion-content padding>
   <div class="container">
-    <ion-col class="_flex-box _justify-content-center _flex-direction-column ">
-      <h4 *ngFor="let question of data.question">{{question}}</h4>
-    </ion-col>
+      <ion-col class="_flex-box _justify-content-center _flex-direction-column ">
+          <h4 *ngFor="let question of data.question">{{question}}</h4>
+        </ion-col>
+    
 
     <div *ngFor="let instance of data?.value; let i = index">
       <ng-container *ngIf="selectedIndex ===i">
@@ -21,18 +22,18 @@
               <h4  class="bold _flex-box sectionHeader"  text-wrap  >{{question?.sectionHeader}}</h4>
               </ion-item-divider>
           <div class="_fullScreenCard" *ngIf="checkForVisibility(j)">
-            <input-type [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
+            <input-type [inputIndex]="j+1" [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
               [schoolId]="schoolId" *ngSwitchCase="'text'" [hideButton]="true" [submissionId]="submissionId"></input-type>
-            <input-type [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
+            <input-type  [inputIndex]="j+1" [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
               [schoolId]="schoolId" *ngSwitchCase="'number'" [submissionId]="submissionId" [hideButton]="true"></input-type>
-            <radio-type [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
+            <radio-type [inputIndex]="j+1" [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
               [schoolId]="schoolId" *ngSwitchCase="'radio'" [submissionId]="submissionId" [hideButton]="true"></radio-type>
-            <date-type [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
+            <date-type  [inputIndex]="j+1" [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
               [schoolId]="schoolId" *ngSwitchCase="'date'" [submissionId]="submissionId" [hideButton]="true"></date-type>
-            <slider [evidenceId]="selectedEvidenceId" [schoolId]="schoolId" [data]="question"
+            <slider [inputIndex]="j+1" [evidenceId]="selectedEvidenceId" [schoolId]="schoolId" [data]="question"
               [imageLocalCopyId]="localImageListKey" [submissionId]="submissionId" *ngSwitchCase="'slider'"></slider>
 
-            <multiple-choice-type [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
+            <multiple-choice-type  [inputIndex]="j+1" [data]="question" [generalQuestion]="generalQuestion" [evidenceId]="evidenceId"
               [schoolId]="schoolId" *ngSwitchCase="'multiselect'" [submissionId]="submissionId" [hideButton]="true"></multiple-choice-type>
           </div>
         </ng-container>

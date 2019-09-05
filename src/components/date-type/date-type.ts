@@ -17,6 +17,7 @@ export class DateTypeComponent implements OnInit{
   @Input() imageLocalCopyId: string;
   @Input() generalQuestion: boolean;
   @Input() submissionId: any;
+  @Input() inputIndex ;
   @Input() hideButton: boolean;
   questionValid: boolean;
   currentDate;
@@ -49,6 +50,7 @@ export class DateTypeComponent implements OnInit{
   }
 
   ngOnInit() {
+    // this.data.autoCapture = false
     const dateTime = new Date();
     // this.currentDate = dateTime.split('T')[0];
     console.log(dateTime);

@@ -38,8 +38,9 @@
 
       <div style="padding: 0 0 60px 0">
         <span *ngFor="let observation of createdObservation; let i=index" >
-        <ion-card *ngIf="observation.status !== 'completed'" text-capitalize padding margin-right  (click)="navigateToCreatedObservationDetails(i)">
-          {{ observation?.name }}
+        <ion-card *ngIf="observation.status !== 'completed'" text-capitalize padding margin-right   class="_flex-box _justify-content-space-between">
+         <div  style="flex:1"  (click)="navigateToCreatedObservationDetails(i)" > {{ observation?.name }}</div> 
+          <ion-icon  name="more"  class="menuIcon" (click)="openMenu($event,i)" ></ion-icon>
         </ion-card>
       </span>
         
@@ -85,8 +86,9 @@
 
       <div style="padding: 0 0 60px 0">
         <span *ngFor="let observation of createdObservation; let i=index" >
-        <ion-card *ngIf="observation.status === 'completed'" text-capitalize padding margin-right  (click)="navigateToCreatedObservationDetails(i)">
-          {{ observation?.name }}
+        <ion-card *ngIf="observation.status === 'completed'" text-capitalize padding margin-right   class="_flex-box _justify-content-space-between">
+          <div style="flex:1" (click)="navigateToCreatedObservationDetails(i)" >{{ observation?.name }}</div>
+          <ion-icon name="more"  class="menuIcon" (click)="openMenu($event,i)" ></ion-icon>
         </ion-card>
       </span>
       </div>
