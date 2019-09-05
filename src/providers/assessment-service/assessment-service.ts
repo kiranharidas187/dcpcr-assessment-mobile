@@ -161,24 +161,28 @@ export class AssessmentServiceProvider {
 
 getAssessmentDetailsOfCreatedObservation(event, programs, assessmentType) {
   return new Promise((resolve, reject) =>{
-  let programIndex = event.programIndex;
+  // let programIndex = event.programIndex;
   let schoolIndex = event.entityIndex;
-  this.utils.startLoader()
-  // const url = AppConfigs.assessmentsList.detailsOfAssessment + programs[event.observationIndex]._id + "?solutionId=" + programs[event.observationIndex].solutionId + "&entityId=" +programs[event.observationIndex].entities[schoolIndex]._id;
-  const url = AppConfigs.cro.observationDetails+ programs[event.observationIndex]._id+"?entityId="+programs[event.observationIndex].entities[schoolIndex]._id;
+  let submissionIndex =  event.submissionNumber ? event.submissionNumber : event.submissionIndex;
+  this.utils.startLoader();
+  // console.log(JSON.stringify(event.entityIndex))
+  // console.log(JSON.stringify(programs[event.observationIndex]['entities'][0]))
 
+  // const url = AppConfigs.assessmentsList.detailsOfAssessment + programs[event.observationIndex]._id + "?solutionId=" + programs[event.observationIndex].solutionId + "&entityId=" +programs[event.observationIndex].entities[schoolIndex]._id;
+  const url = event.submissionNumber ? AppConfigs.cro.observationDetails+ programs[event.observationIndex]._id+"?entityId="+programs[event.observationIndex].entities[schoolIndex]._id+"&submissionNumber="+event.submissionNumber :
+      AppConfigs.cro.observationDetails+ programs[event.observationIndex]._id+"?entityId="+programs[event.observationIndex].entities[schoolIndex]._id+"&submissionNumber="+programs[event.observationIndex].entities[schoolIndex]['submissions'][submissionIndex].submissionNumber;
+  console.log(url)
   this.apiService.httpGet(url, success => {
     this.ulsdp.mapSubmissionDataToQuestion(success.result, true);
     const generalQuestions = success.result['assessment']['generalQuestions'] ? success.result['assessment']['generalQuestions'] : null;
     this.localStorage.setLocalStorage("generalQuestions_" + success.result['assessment']["submissionId"], generalQuestions);
     this.localStorage.setLocalStorage("generalQuestionsCopy_" + success.result['assessment']["submissionId"], generalQuestions);
-    programs[event.observationIndex]['entities'][schoolIndex].downloaded = true;
-    programs[event.observationIndex]['entities'][schoolIndex].submissionId = success.result.assessment.submissionId;
-    // this.localStorage.setLocalStorage(this.utils.getAssessmentLocalStorageKey(programs[programIndex].solutions[assessmentIndex].entities[schoolIndex].submissionId), success.result);
+    
+    event.submissionNumber ? null : programs[event.observationIndex]['entities'][schoolIndex]['submissions'][submissionIndex].downloaded = true;
+    // programs[event.observationIndex]['entities'][schoolIndex].submissionId = success.result.assessment.submissionId;
+    this.localStorage.setLocalStorage(this.utils.getAssessmentLocalStorageKey(success.result.assessment.submissionId), success.result);
     this.localStorage.setLocalStorage(assessmentType, programs);
-    
     this.utils.stopLoader();
-    
     resolve(programs);
   }, error => {
     //console.log("error details api")

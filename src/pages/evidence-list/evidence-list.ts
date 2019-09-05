@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, Platform } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { FeedbackProvider } from '../../providers/feedback/feedback';
 import { EvidenceProvider } from '../../providers/evidence/evidence';
@@ -30,13 +29,14 @@ export class EvidenceListPage {
   }
  
   ionViewWillEnter() {
-    //console.log('ionViewDidLoad EvidenceListPage');
+    console.log('ionViewDidLoad EvidenceListPage');
     this.utils.startLoader();
     this.localStorage.getLocalStorage(this.utils.getAssessmentLocalStorageKey(this.entityId)).then(successData => {
       this.utils.stopLoader();
       this.entityData = successData;
-      //console.log(JSON.stringify(successData));
+      console.log(JSON.stringify(successData));
       this.entityEvidences = this.entityData['assessment']['evidences'] ;
+      this.mapCompletedAndTotalQuestions();
       this.checkForProgressStatus();
       this.localStorage.getLocalStorage('generalQuestions_' + this.entityId).then(successData => {
         this.generalQuestions = successData;
@@ -45,6 +45,22 @@ export class EvidenceListPage {
     }).catch(error => {
       this.utils.stopLoader()
     })
+  }
+
+  mapCompletedAndTotalQuestions() {
+    for (const evidence of this.entityEvidences) {
+      let totalQuestions = 0;
+      let completedQuestions = 0;
+      for (const section of evidence.sections) {
+        totalQuestions = totalQuestions + section.totalQuestions;
+        completedQuestions = completedQuestions + section.completedQuestions;
+      }
+      let percentage = totalQuestions ? (completedQuestions/totalQuestions)*100 : 0;
+      if(!completedQuestions) {
+        percentage = 0;
+      }
+      evidence.completePercentage = Math.trunc(percentage) ;
+    }
   }
 
   goToGeneralQuestionList(): void {
@@ -71,21 +87,14 @@ export class EvidenceListPage {
   openAction(assessment, evidenceIndex) {
     this.utils.setCurrentimageFolderName(this.entityEvidences[evidenceIndex].externalId, assessment._id)
     const options = { _id: assessment._id, name: assessment.name, selectedEvidence: evidenceIndex, entityDetails: this.entityData };
-    //console.log("testing 1")
     this.evdnsServ.openActionSheet(options);
-    //console.log("testing 2")
-
   }
 
   navigateToEvidence(index): void {
-    //console.log(JSON.stringify(this.entityId))
     if (this.entityEvidences[index].startTime) {
-      //console.log("if loop")
       this.utils.setCurrentimageFolderName(this.entityEvidences[index].externalId, this.entityId)
       this.navCtrl.push('SectionListPage', { _id: this.entityId, name: this.entityName, selectedEvidence: index })
     } else {
-      //console.log("else loop")
-
       const entity = { _id: this.entityId, name: this.entityName }
       this.openAction(entity, index);
     }

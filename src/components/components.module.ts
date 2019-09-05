@@ -22,12 +22,21 @@ import { EntityListingComponent } from './entity-listing/entity-listing';
 import { PipesModule } from '../pipes/pipes.module';
 import { SelectableListComponent } from './selectable-list/selectable-list';
 import { ObservationEntityListingComponent } from './observation-entity-listing/observation-entity-listing';
+import { QuestionHeadingComponent } from './question-heading/question-heading';
+import { ProgressBarComponent } from './progress-bar/progress-bar';
+import { GenericMenuPopOverComponent } from './generic-menu-pop-over/generic-menu-pop-over';
+import { ProgramListingComponent } from './program-listing/program-listing';
+import { AngularFontAwesomeModule } from 'angular-font-awesome';
+
+import { AudioRecordingListingComponent } from './audio-recording-listing/audio-recording-listing';
+import { AudioListComponent } from './audio-list/audio-list';
 
 @NgModule({
 	declarations: [
 		InputTypeComponent,
 		RadioTypeComponent,
     MultipleChoiceTypeComponent,
+    
     DateTypeComponent,
     RemarksComponent,
     ImageUploadComponent,
@@ -40,14 +49,20 @@ import { ObservationEntityListingComponent } from './observation-entity-listing/
     SliderComponent,
     EntityListingComponent,
     SelectableListComponent,
-    ObservationEntityListingComponent
+    ObservationEntityListingComponent,
+    QuestionHeadingComponent,
+    ProgressBarComponent,
+    GenericMenuPopOverComponent,
+    ProgramListingComponent,
+    AudioRecordingListingComponent,
+    AudioListComponent
   ],
 	imports: [
 		IonicModule,
     DirectivesModule,
     PipesModule,
     TranslateModule,
-  
+    AngularFontAwesomeModule
 	],
 	exports: [
 		InputTypeComponent,
@@ -65,14 +80,21 @@ import { ObservationEntityListingComponent } from './observation-entity-listing/
     SliderComponent,
     EntityListingComponent,
     SelectableListComponent,
-    ObservationEntityListingComponent
+    ObservationEntityListingComponent,
+    QuestionHeadingComponent,
+    ProgressBarComponent,
+    GenericMenuPopOverComponent,
+    ProgramListingComponent,
+    AudioRecordingListingComponent,
+    AudioListComponent
 	],
 	entryComponents: [
 		InputTypeComponent,
 		RadioTypeComponent,
 		MatrixModalComponent,
     MenuItemComponent,
-    EntityListingComponent
+    EntityListingComponent,
+    GenericMenuPopOverComponent
 	],
 	providers:[
 		Network, DatePipe, SlackProvider

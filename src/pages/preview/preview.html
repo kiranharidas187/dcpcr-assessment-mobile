@@ -1,0 +1,64 @@
+<ion-header>
+  <header [title]="'headings.submissionPreview'|translate" [hideBack]="false">
+  </header>
+</ion-header>
+
+
+<ion-content>
+  <h3 padding>{{currentEvidence?.name}}</h3>
+  <ion-card *ngFor="let section of currentEvidence?.sections">
+    <ion-card-header>
+      {{section?.name}}
+    </ion-card-header>
+    <ion-card-content>
+      <!-- <div *ngFor="let question of section?.questions;let i = index">
+        <div class="question">Q.{{i+1}} {{question?.question[0]}}</div>
+        <div class="answer">A. {{question?.value}}</div>
+      </div> -->
+
+      <ion-list>
+        <ion-item *ngFor="let question of section?.questions;let i = index" text-wrap>
+          <div *ngIf="question?.responseType !== 'matrix'">
+            <h3>Q{{i+1}}. {{question?.question[0]}}</h3>
+            <p *ngIf="question?.responseType !== 'radio' && question?.responseType !== 'multiselect' "> Ans.
+              {{question?.value}}</p>
+            <p *ngIf="question?.responseType === 'radio' || question?.responseType === 'multiselect' "> Ans.
+              {{getLabels(question)}}</p>
+            <p *ngIf="question.remarks">{{question.remarks}}</p>
+          </div>
+
+          <div *ngIf="question?.responseType === 'matrix'">
+            <h3>Q{{i+1}}. {{question?.question[0]}}</h3>
+            <div *ngFor="let instance of question.value;let j = index" class="instanceQuest">
+              <h5 class="instacnce">{{question?.instanceIdentifier}} {{j+1}}</h5>
+              <div *ngFor="let answer of  instance; let k = index" class="matrixQuestion">
+                <h3>Q{{k+1}}. {{answer?.question[0]}}</h3>
+                <p *ngIf="answer?.responseType !== 'radio' && answer?.responseType !== 'multiselect' "> Ans.
+                  {{answer?.value}}</p>
+                <p *ngIf="answer?.responseType === 'radio' || answer?.responseType === 'multiselect' "> Ans.
+                  {{getLabels(answer)}}</p>
+                <p *ngIf="question.remarks">{{question.remarks}}</p>
+
+              </div>
+            </div>
+
+          </div>
+
+        </ion-item>
+      </ion-list>
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer no-shadow
+  *ngIf="((allAnsweredForEvidence && !currentEvidence.isSubmitted) || currentEvidence?.enableSubmit)">
+  <ion-toolbar position="bottom">
+    <ion-row>
+      <button ion-button full (click)="checkForNetworkTypeAlert()">{{'buttons.upload'|translate}}
+        {{'buttons.and'|translate}}
+        {{'buttons.submit'|translate}}</button>
+
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

@@ -1,6 +1,18 @@
 <!-- Generated template for the InputTypeComponent component -->
 <ion-col class="_flex-box _justify-content-center _flex-direction-column ">
-  <h4 [ngClass]="{'_validQuestion': data?.value}" *ngFor="let question of data.question">{{question}}</h4>
+
+  <h4 [ngClass]="{'_validQuestion': data?.value}" class="flexbox" >
+    <!-- {{inputIndex}}. 
+
+   <div padding-left>
+      <div  *ngFor="let question of data.question"> 
+      {{question}} 
+    </div>
+      
+  </div>   -->
+  <question-heading [inputIndex]="inputIndex" [data]="data"></question-heading>
+
+</h4>
 </ion-col>
 <div class="_tip _flex-box "> {{data?.tip}}</div>
 
@@ -11,6 +23,7 @@
   <div *ngIf="!notNumber" class="_errorMsg">{{getErrorMsg()}}</div>
 
   <remarks *ngIf="data?.showRemarks" [data]="data"></remarks>
-  <image-upload *ngIf="data?.file" [data]="data" [generalQuestion]="generalQuestion" [imageLocalCopyId]="imageLocalCopyId" [evidenceId]="evidenceId" [submissionId]="submissionId"></image-upload>
+  <image-upload  [data]="data" [generalQuestion]="generalQuestion" [imageLocalCopyId]="imageLocalCopyId" [evidenceId]="evidenceId" [submissionId]="submissionId"></image-upload>
+
 </div>
 <!-- <footer-buttons *ngIf="!hideButton" [isFirst]="isFirst" [isLast]="isLast" (nextAction)="next()" (backAction)="back()"></footer-buttons> -->

@@ -1,6 +1,14 @@
 <!-- Generated template for the SliderComponent component -->
 <ion-col class="_flex-box _justify-content-center _flex-direction-column ">
-  <h4 [ngClass]="{'_validQuestion': data?.value}" *ngFor="let question of data.question">{{question}}</h4>
+  <h4 [ngClass]="{'_validQuestion': data?.value}" class="flexbox" >
+    <!-- <div class="noWrap">{{inputIndex}} .</div> <div padding-left>
+      <div  *ngFor="let question of data.question"> 
+      {{question}} 
+    </div> 
+    </div> -->
+    <question-heading [inputIndex]="inputIndex" [data]="data"></question-heading>
+
+  </h4>
 </ion-col>
 <div class="_tip _flex-box "> {{data?.tip}}</div>
 <div class="_flex-box _justify-content-center _full-width" margin-top>
@@ -18,6 +26,6 @@
   </ion-item>
 
   <remarks *ngIf="data?.showRemarks" [data]="data"></remarks>
-  <image-upload *ngIf="data?.file" [submissionId]="submissionId" [data]="data" [generalQuestion]="generalQuestion" [imageLocalCopyId]="imageLocalCopyId"
+  <image-upload  [submissionId]="submissionId" [data]="data" [generalQuestion]="generalQuestion" [imageLocalCopyId]="imageLocalCopyId"
     [evidenceId]="evidenceId" [schoolId]="schoolId"></image-upload>
 </div>

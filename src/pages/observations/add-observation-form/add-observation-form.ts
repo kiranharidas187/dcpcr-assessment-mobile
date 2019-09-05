@@ -46,6 +46,10 @@ export class AddObservationFormPage {
   saveDraftType: string = 'force';
   editData: any;
   editDataIndex: any;
+  searchSolutionUrl: string = "";
+  solutionLimit: number = 100;
+  solutionPage: number = 1;
+  totalCount: number = 0;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -189,11 +193,25 @@ export class AddObservationFormPage {
     contactModal.present();
   }
 
-  getSolutionList() {
+  getSolutionList(event ? ) {
     let solutionFlag = false;
+    event ? this.solutionPage ++ : this.solutionPage ;
     this.utils.startLoader();
-    this.apiProviders.httpGet(AppConfigs.cro.getSolutionAccordingToType + this.entityType, success => {
-      this.listOfSolution = success.result;
+    this.apiProviders.httpGet(AppConfigs.cro.getSolutionAccordingToType + this.entityType + "?search="+this.searchSolutionUrl+"&limit="+this.solutionLimit+"&page="+this.solutionPage, success => {
+      // console.log(JSON.stringify(success.result))
+      // this.listOfSolution = event ? [...this.listOfSolution ,...success.result] :[...success.result];
+      // // this.totalCount = success.result[0].count;
+      // console.log(JSON.stringify(this.listOfSolution))
+      // if (this.editData && this.editData.data.solutionId) {
+      //   this.listOfSolution.forEach(element => {
+      //     if (element._id === this.editData.data.solutionId)
+      //       this.selectedFrameWork = element._id;
+      //   });
+      // }
+      console.log(JSON.stringify(success.result[0].data))
+      this.listOfSolution = event ? [...this.listOfSolution ,...success.result[0].data] :[...success.result[0].data];
+      this.totalCount = success.result[0].count;
+      console.log(JSON.stringify(this.listOfSolution))
       if (this.editData && this.editData.data.solutionId) {
         this.listOfSolution.forEach(element => {
           if (element._id === this.editData.data.solutionId)
@@ -247,7 +265,35 @@ export class AddObservationFormPage {
 
     return actionFlag;
   }
-
+  doInfinite(infiniteScroll) {
+    console.log("doInfinite function called");
+    setTimeout(() => {
+      this.getSolutionList('infiniteScroll')
+      infiniteScroll.complete();
+    }, 500);
+  }
+  searchSolution(event){
+    if(!event.value){
+      // this.listOfSolution = [];
+      this.clearSolution();
+      return
+    }
+    if(!event.value || event.value.length < 3){
+        return;
+    }
+    this.searchSolutionUrl = event.value;
+    this.getSolutionList();
+     
+    // console.log("search entity called")
+    // console.log(event.value);
+    // this.searchUrl.emit(event.value)
+    // this.filterSelected();
+  }
+  clearSolution(){
+    // this.listOfSolution = []
+    this.searchSolutionUrl ="";
+    this.getSolutionList();
+  }
   tmpFunc() { 
      this.selectedIndex === 0 ? this.utils.openToast("Select the type of observation") 
     : 

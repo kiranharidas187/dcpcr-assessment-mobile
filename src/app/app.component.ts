@@ -57,7 +57,8 @@ export class MyApp {
     {
       name: "faqs",
       icon: "help",
-      component: FaqPage,
+      // component: FaqPage,
+      externalLink: true,
       active: false
     },
     {
@@ -81,6 +82,7 @@ export class MyApp {
     private networkGpsProvider: NetworkGpsProvider,
     private menuCntrl: MenuController,
     private deepLinks: Deeplinks,
+    private utils: UtilsProvider
   ) {
 
 
@@ -138,12 +140,17 @@ export class MyApp {
 
   goToPage(index) {
     this.menuCntrl.close();
-    for (const page of this.allPages) {
-      page['active'] = false;
+    if(this.allPages[index]["externalLink"]){
+      this.utils.openExternalLinkOnBrowser(AppConfigs.externalLinks.faq)
+    } else {
+      for (const page of this.allPages) {
+        page['active'] = false;
+      }
+      this.allPages[index]['active'] = true;
+      // this.utils.setAssessmentLocalStorageKey(this.allPages[index]['name'] === "individual" ? "assessmentDetails_" : "schoolDetails_")
+      this.nav.push(this.allPages[index]['component']);
     }
-    this.allPages[index]['active'] = true;
-    // this.utils.setAssessmentLocalStorageKey(this.allPages[index]['name'] === "individual" ? "assessmentDetails_" : "schoolDetails_")
-    this.nav.setRoot(this.allPages[index]['component']);
+
   }
 
   initTranslate() {

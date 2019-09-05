@@ -1,5 +1,6 @@
 import { Component, Input, Output , EventEmitter, OnInit} from '@angular/core';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { HintProvider } from '../../providers/hint/hint';
 
 /**
  * Generated class for the RadioTypeComponent component.
@@ -12,7 +13,7 @@ import { UtilsProvider } from '../../providers/utils/utils';
   templateUrl: 'radio-type.html'
 })
 export class RadioTypeComponent implements OnInit{
-
+  @Input() inputIndex ;
   @Input() data:any;
   @Input() isLast: boolean;
   @Input() isFirst: boolean;
@@ -28,7 +29,7 @@ export class RadioTypeComponent implements OnInit{
   color: string = 'light';
   isComplete: boolean;
 
-  constructor(private utils: UtilsProvider) {
+  constructor(private utils: UtilsProvider, private hintService: HintProvider) {
 
     console.log('Hello RadioTypeComponent Component');
 
@@ -38,11 +39,16 @@ export class RadioTypeComponent implements OnInit{
     // console.log(JSON.stringify(this.data))
     this.data.startTime = this.data.startTime ? this.data.startTime : Date.now();
     console.log("Evidence id"+ this.evidenceId)
-
+    
 
   }
 
-
+  updateData(event){
+    console.log(JSON.stringify(this.data));
+    // this.data ={}
+    // this.data = Object.assign({}, this.data)
+    this.data.fileName = [...this.data.fileName]
+  }
   next(status?:any) {
     this.data.isCompleted = this.utils.isQuestionComplete(this.data);
     this.nextCallBack.emit(status);
@@ -56,5 +62,9 @@ export class RadioTypeComponent implements OnInit{
   checkForValidation(): void {
     this.data.isCompleted = this.utils.isQuestionComplete(this.data);
     this.data.endTime = this.data.isCompleted ? Date.now() : "";
+  }
+
+  openHint(hint){
+    this.hintService.presentHintModal({hint: hint});
   }
 }

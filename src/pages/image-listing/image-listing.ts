@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, Platform } from 'ionic-angular';
+import { NavController, NavParams, Platform, Events } from 'ionic-angular';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { Storage } from '@ionic/storage';
 import { File } from '@ionic-native/file';
@@ -9,6 +9,7 @@ import { AppConfigs } from '../../providers/appConfig';
 import { SlackProvider } from '../../providers/slack/slack';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
 import { ObservationProvider } from '../../providers/observation/observation';
+import { TranslateService } from '@ngx-translate/core';
 
 declare var cordova: any;
 
@@ -22,6 +23,8 @@ export class ImageListingPage {
     private storage: Storage, private file: File, private fileTransfer: FileTransfer,
     private apiService: ApiProvider, private utils: UtilsProvider, private localStorage: LocalStorageProvider,
     private platform: Platform, private slack: SlackProvider,
+    private events :Events,
+    private translate: TranslateService,
     private observetionProvider: ObservationProvider) {
   }
 
@@ -57,16 +60,32 @@ export class ImageListingPage {
     this.localStorage.getLocalStorage(this.utils.getAssessmentLocalStorageKey(this.submissionId)).then(data => {
       this.schoolData = data;
       // console.log(this.submissionId + "Image listing  success")
-      console.log(JSON.stringify(data))
       this.currentEvidence = this.schoolData['assessment']['evidences'][this.selectedEvidenceIndex];
       this.imageLocalCopyId = "images_" + this.currentEvidence.externalId + "_" + this.submissionId;
       this.evidenceSections = this.currentEvidence['sections'];
       this.selectedEvidenceName = this.currentEvidence['name'];
-      this.checkIfEcmSumittedByUser();
+      this.getAllImages();
     }).catch(error => {
       // console.log(this.submissionId + "Image listing error")
 
     })
+
+  }
+
+  getAllImages() {
+    let imageArray = [];
+    for (const sections of this.currentEvidence.sections) {
+      for (const question of sections.questions) {
+        let questImage = this.utils.getImageNamesForQuestion(question);
+
+        // imageArray = questImage.length ? [...imageArray, ...questImage] : imageArray;
+        const newArray = questImage.length ? imageArray.concat(questImage) : imageArray;
+        imageArray = newArray;
+      }
+    }
+    console.log(JSON.stringify(imageArray));
+    this.uploadImages = imageArray;
+    this.checkIfEcmSumittedByUser();
 
   }
 
@@ -78,21 +97,23 @@ export class ImageListingPage {
     this.apiService.httpGet(url + submissionId + "?evidenceId=" + this.currentEvidence.externalId, success => {
       this.utils.stopLoader();
       if (success.result.allowed) {
-        this.storage.get("allImageList").then(data => {
-          console.log(data)
-          if (data && JSON.parse(data)[this.submissionId]) {
-            this.uploadImages = (JSON.parse(data)[this.submissionId][this.currentEvidence.externalId]) ? (JSON.parse(data)[this.submissionId][this.currentEvidence.externalId]) : [];
-          } else {
-            this.uploadImages = [];
-          }
-          if (this.uploadImages.length) {
-            this.createImageFromName(this.uploadImages);
-          } else {
-            this.submitEvidence();
-          }
-        })
+        // this.storage.get("allImageList").then(data => {
+        //   console.log(data)
+        //   if (data && JSON.parse(data)[this.submissionId]) {
+        //     this.uploadImages = (JSON.parse(data)[this.submissionId][this.currentEvidence.externalId]) ? (JSON.parse(data)[this.submissionId][this.currentEvidence.externalId]) : [];
+        //   } else {
+        //     this.uploadImages = [];
+        //   }
+        if (this.uploadImages.length) {
+          this.createImageFromName(this.uploadImages);
+        } else {
+          this.submitEvidence();
+        }
+        // })
       } else {
-        this.utils.openToast("Submission completed successfully");
+        this.translate.get('toastMessage.submissionCompleted').subscribe(translations => {
+          this.utils.openToast(translations);
+        })
         // if (this.schoolData['assessments'][0]) {
         //   this.schoolData['assessments'][0]['evidences'][this.selectedEvidenceIndex].isSubmitted = true;
         // } else {
@@ -119,7 +140,7 @@ export class ImageListingPage {
       submissionId: submissionId
     }
     for (const image of this.uploadImages) {
-      files.files.push(image.name)
+      files.files.push(image)
     }
     this.apiService.httpPost(AppConfigs.survey.getImageUploadUr, files, success => {
       this.utils.stopLoader();
@@ -130,7 +151,9 @@ export class ImageListingPage {
       this.checkForLocalFolder();
     }, error => {
       this.utils.stopLoader();
-      this.utils.openToast('Unable to get google urls')
+      this.translate.get('toastMessage.enableToGetGoogleUrls').subscribe(translations => {
+        this.utils.openToast(translations);
+      })
     })
   }
 
@@ -156,7 +179,7 @@ export class ImageListingPage {
   createImageFromName(imageList) {
     this.utils.startLoader();
     for (const image of imageList) {
-      this.imageList.push({ uploaded: false, file: image.name, url: "" });
+      this.imageList.push({ uploaded: false, file: image, url: "" });
     }
     this.getImageUploadUrls();
   }
@@ -191,7 +214,9 @@ export class ImageListingPage {
         const errorObject = { ... this.errorObj };
         this.retryCount++;
         if (this.retryCount > 3) {
-          this.utils.openToast("Something went wrong. Please try after sometime.")
+          this.translate.get('toastMessage.someThingWentWrongTryLater').subscribe(translations => {
+            this.utils.openToast(translations);
+          })
           errorObject.text = `${this.page}: Cloud image upload failed.URL:  ${this.imageList[this.uploadIndex].url}.
             Details: ${JSON.stringify(err)}`;
           this.slack.pushException(errorObject);
@@ -231,7 +256,7 @@ export class ImageListingPage {
     const submissionId = this.submissionId;
     const url = (this.schoolData.observation ? AppConfigs.cro.makeSubmission : AppConfigs.survey.submission) + submissionId + '/';
     this.apiService.httpPost(url, payload, response => {
-      if(this.schoolData.observation){
+      if (this.schoolData.observation) {
         this.observetionProvider.markObservationAsCompleted(submissionId);
       }
       this.utils.openToast(response.message);
@@ -242,6 +267,8 @@ export class ImageListingPage {
         name: this.schoolName
       }
       this.utils.stopLoader();
+      this.schoolData.observation ? this.events.publish('updateSubmissionStatus'): null;
+
       this.navCtrl.remove(2, 1);
       this.navCtrl.pop();
     }, error => {

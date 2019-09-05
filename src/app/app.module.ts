@@ -30,12 +30,18 @@ import { QuestionerPageModule } from '../pages/questioner/questioner.module';
 import { ComponentsModule } from '../components/components.module';
 import { DirectivesModule } from '../directives/directives.module';
 import { FaqPage } from '../pages/faq/faq';
+import { SocialSharing } from '@ionic-native/social-sharing';
+
 import { EntityProfileEditPage } from '../pages/entity-profile-edit/entity-profile-edit';
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
 import { FilePath } from '@ionic-native/file-path';
 import { FileTransfer} from '@ionic-native/file-transfer';
 import { ImagePicker } from '@ionic-native/image-picker';
+import { FileChooser } from '@ionic-native/file-chooser';
+import { IOSFilePicker } from '@ionic-native/file-picker';
+import { FileOpener } from '@ionic-native/file-opener';
+
 import { ImageListingPage } from '../pages/image-listing/image-listing';
 import { MatrixActionModalPage } from '../pages/matrix-action-modal/matrix-action-modal';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
@@ -75,17 +81,29 @@ import { SolutionDetailsPage } from '../pages/solution-details/solution-details'
 import { IonicStepperModule } from 'ionic-stepper';
 import { ObservationProvider } from '../providers/observation/observation';
 import { AccessActionsProvider } from '../providers/access-actions/access-actions';
+import { AssessmentAboutPage } from '../pages/assessment-about/assessment-about';
+import { EntityListingPage } from '../pages/entity-listing/entity-listing';
+import { SharingFeaturesProvider } from '../providers/sharing-features/sharing-features';
+import { HintProvider } from '../providers/hint/hint';
+import { HintPage } from '../pages/hint/hint';
+import { Media } from '@ionic-native/media';
+import { PreviewPage } from '../pages/preview/preview';
+import { SubmissionListPage } from '../pages/submission-list/submission-list';
+import { ObservationServiceProvider } from '../providers/observation-service/observation-service';
+import { DownloadAndPreviewProvider } from '../providers/download-and-preview/download-and-preview';
 
 @NgModule({
   declarations: [
     MyApp,
     AboutPage,
     HomePage,
+    AssessmentAboutPage,
     WelcomePage,
     InstitutionsEntityList,
     FaqPage,
     EntityProfileEditPage,
     ImageListingPage,
+    EntityListingPage,
     MatrixActionModalPage,
     QuestionDashboardPage,
     SolutionDetailsPage,
@@ -95,7 +113,10 @@ import { AccessActionsProvider } from '../providers/access-actions/access-action
     GeneralQuestionPage,
     GeneralQuestionSubmitPage,
     IndividualListingPage,
-    ProgramDetailsPage
+    ProgramDetailsPage,
+    HintPage,
+    PreviewPage,
+    SubmissionListPage
   ],
   imports: [
     BrowserAnimationsModule,
@@ -125,7 +146,6 @@ import { AccessActionsProvider } from '../providers/access-actions/access-action
     RegistryListPageModule,
     GeneralQuestionListPageModule,
     IonicStepperModule,
-
     ObservationsPageModule  ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -143,11 +163,15 @@ import { AccessActionsProvider } from '../providers/access-actions/access-action
     RemarksPage,
     FeedbackPage,
     DetailPage,
+    AssessmentAboutPage,
     GeneralQuestionPage,
     GeneralQuestionSubmitPage,
     IndividualListingPage,
     ProgramDetailsPage,
-    
+    EntityListingPage,
+    HintPage,
+    PreviewPage,
+    SubmissionListPage
   ],
   providers: [
     StatusBar,
@@ -155,6 +179,8 @@ import { AccessActionsProvider } from '../providers/access-actions/access-action
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     InAppBrowser,
     AuthProvider,
+    FileChooser,
+
     CurrentUserProvider,
     Network,
     SchoolListProvider,
@@ -186,7 +212,16 @@ import { AccessActionsProvider } from '../providers/access-actions/access-action
     AssessmentServiceProvider,
     Deeplinks,
     ObservationProvider,
-    AccessActionsProvider
+    AccessActionsProvider,
+    SocialSharing,
+    SharingFeaturesProvider,
+    IOSFilePicker,
+    FileOpener,
+    HintProvider,
+
+    Media,
+    ObservationServiceProvider,
+    DownloadAndPreviewProvider,
   ]
 })
 export class AppModule { }

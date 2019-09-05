@@ -1,12 +1,20 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ActionSheetController, Platform , AlertController} from 'ionic-angular'
+import { ActionSheetController, Platform, AlertController } from 'ionic-angular'
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
 import { ImagePicker, ImagePickerOptions } from '@ionic-native/image-picker';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { Storage } from '@ionic/storage';
-// import { imageLocalListName} from "../../providers/appConfig"
 import { PhotoLibrary } from '@ionic-native/photo-library';
+import { TranslateService } from '@ngx-translate/core';
+import { FileChooser } from '@ionic-native/file-chooser';
+import { FilePath } from '@ionic-native/file-path';
+import { IOSFilePicker } from '@ionic-native/file-picker';
+import { FILE_EXTENSION_HEADERS } from './mimTypes';
+import { FileOpener } from '@ionic-native/file-opener';
+import { MediaObject, Media } from '@ionic-native/media';
+import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { AndroidPermissions } from '@ionic-native/android-permissions';
 
 declare var cordova: any;
 
@@ -16,14 +24,34 @@ declare var cordova: any;
 })
 export class ImageUploadComponent implements OnInit {
 
+  recording: boolean = false;
+  filesPath: string;
+  fileName: string;
+  audio: MediaObject;
+  audioList: any[] = [];
+  isIos: boolean = this.platform.is('ios');
+  interval;
+  timeLeft: number = 0;
+  minutes: number = 0;
+  seconds: number = 0;
+
+
   text: string;
   datas;
-  isIos: boolean;
   appFolderPath: string;
+  videoFormats = ["mp4", "WMV", "WEBM", "flv", "avi", "3GP", "OGG"];
+  audioFormats = ["AIF", "cda", "mpa", "ogg", "wav", "wma", 'mp3'];
+  pptFormats = ["ppt", "pptx", "pps", "ppsx"];
+  wordFormats = ["docx", "doc", "docm", "dotx"];
+  imageFormats = ['jpg', 'png']
+  pdfFormats = ["pdf"];
+  spreadSheetFormats = ["xls", "xlsx"];
+
 
   @Input()
   set data(data) {
     this.datas = data;
+    console.log("added anew file")
     this.createImageFromName(data['fileName'])
   }
 
@@ -40,93 +68,111 @@ export class ImageUploadComponent implements OnInit {
   imageList: Array<any> = [];
   imageNameCounter: number = 0;
   localEvidenceImageList: any;
-  allLocalImageList: any ={};
+  // allLocalImageList: any = {};
 
   constructor(private actionSheet: ActionSheetController,
     private camera: Camera,
+    private localStorage : LocalStorageProvider,
     private file: File, private imgPicker: ImagePicker, private utils: UtilsProvider,
     private storage: Storage,
-    private photoLibrary: PhotoLibrary, private platform: Platform, 
-    private alertCtrl : AlertController) {
+    private photoLibrary: PhotoLibrary, private platform: Platform,
+    private translate: TranslateService,
+    private filePath: FilePath,
+    private iosFilePicker: IOSFilePicker,
+    private fileOpener: FileOpener,
+    private fileChooser: FileChooser,
+    private androidPermissions : AndroidPermissions,
+    private media: Media,
+    private alertCtrl: AlertController) {
     console.log('Hello ImageUploadComponent Component');
     this.text = 'Hello World';
   }
 
-  // ionViewDidLoad() {
-  //   console.log("hiiiii")
-  //   // this.userData = this.currentUser.getCurrentUserData();
-  // }
   ngOnInit() {
-    // let localImageListName: imageLocalListName;
-    // localImageListName = {
-    //   evidenceId:"",
-    //   schoolId:"",
-    // }
-    console.log(this.imageLocalCopyId)
-    this.storage.get(this.generalQuestion ?'genericQuestionsImages':'allImageList').then(data => {
-      this.allLocalImageList = JSON.parse(data) ? JSON.parse(data) : {};
-      console.log("First fetch "  + JSON.stringify(this.allLocalImageList))
-      console.log(this.generalQuestion)
-      if(!this.generalQuestion){
-        if(this.allLocalImageList[this.submissionId]){
-          this.allLocalImageList[this.submissionId][this.evidenceId] = (this.allLocalImageList[this.submissionId][this.evidenceId] ) ? this.allLocalImageList[this.submissionId][this.evidenceId] : []
-        } else {
-          console.log(this.submissionId + " " + this.evidenceId)
-          this.allLocalImageList[this.submissionId] = {};
-          this.allLocalImageList[this.submissionId][this.evidenceId] = []
-          this.localEvidenceImageList = [];
-        }
-      } else {
-        console.log("oninit ")
-        if(this.allLocalImageList[this.submissionId]){
-          this.allLocalImageList[this.submissionId] = (this.allLocalImageList[this.submissionId] ) ? this.allLocalImageList[this.submissionId] : []
-        } else {
-          this.allLocalImageList[this.submissionId] = [];
-          this.localEvidenceImageList = [];
-        }
-      console.log("second fetch "  + JSON.stringify(this.allLocalImageList))
-
-      }
-
-      // this.allLocalImageList = JSON.parse(data) ? JSON.parse(data) : {};
-      // this.localEvidenceImageList = (this.allLocalImageList && this.allLocalImageList[this.evidenceId]) ? this.allLocalImageList[this.evidenceId] : [];
-      // console.log('local images' + JSON.stringify(this.allLocalImageList));
-      // console.log(JSON.stringify(this.datas));
-      // console.log(this.evidenceId)
-    })
+    // this.storage.get(this.generalQuestion ? 'genericQuestionsImages' : 'allImageList').then(data => {
+    //   this.allLocalImageList = JSON.parse(data) ? JSON.parse(data) : {};
+    //   console.log(data + "On init")
+    //   if (!this.generalQuestion) {
+    //     if (this.allLocalImageList[this.submissionId]) {
+    //       this.allLocalImageList[this.submissionId][this.evidenceId] = (this.allLocalImageList[this.submissionId][this.evidenceId]) ? this.allLocalImageList[this.submissionId][this.evidenceId] : []
+    //     } else {
+    //       console.log(this.submissionId + " " + this.evidenceId)
+    //       this.allLocalImageList[this.submissionId] = {};
+    //       this.allLocalImageList[this.submissionId][this.evidenceId] = []
+    //       this.localEvidenceImageList = [];
+    //     }
+    //   } else {
+    //     if (this.allLocalImageList[this.submissionId]) {
+    //       this.allLocalImageList[this.submissionId] = (this.allLocalImageList[this.submissionId]) ? this.allLocalImageList[this.submissionId] : []
+    //     } else {
+    //       this.allLocalImageList[this.submissionId] = [];
+    //       this.localEvidenceImageList = [];
+    //     }
+    //   }
+    //   // this.allLocalImageList = JSON.parse(data) ? JSON.parse(data) : {};
+    //   // this.localEvidenceImageList = (this.allLocalImageList && this.allLocalImageList[this.evidenceId]) ? this.allLocalImageList[this.evidenceId] : [];
+    // })
     this.isIos = this.platform.is('ios') ? true : false;
     this.appFolderPath = this.isIos ? cordova.file.documentsDirectory + 'images' : cordova.file.externalDataDirectory + 'images';
-
-    // this.imageList.push('1538556284785.jpg')
   }
 
   openActionSheet(): void {
+    let translateObject;
+    this.translate.get(['actionSheet.addimage', 'actionSheet.camera', 'actionSheet.uploadFile', 'actionSheet.uploadImage', 'actionSheet.upload', 'actionSheet.cancel']).subscribe(translations => {
+      translateObject = translations;
+    })
     const actionSheet = this.actionSheet.create({
-      title: 'Add images',
+      title: translateObject['actionSheet.addimage'],
       buttons: [
         {
-          text: 'Camera',
+          text: translateObject['actionSheet.camera'],
           role: 'destructive',
           icon: 'camera',
           handler: () => {
             this.openCamera();
           }
-        }, {
-          text: 'Upload',
+        },
+        {
+          text: translateObject['actionSheet.uploadImage'],
           icon: 'cloud-upload',
           handler: () => {
             this.openLocalLibrary();
           }
         }, {
-          text: 'Cancel',
+          text: translateObject['actionSheet.uploadFile'],
+          icon: 'document',
+          handler: () => {
+            this.isIos ? this.filePickerForIOS() : this.openFilePicker();
+          }
+        }, {
+          text: translateObject['actionSheet.cancel'],
           role: 'cancel',
           handler: () => {
-            console.log('Cancel clicked');
           }
         }
       ]
     });
     actionSheet.present();
+  }
+
+  filePickerForIOS() {
+    this.iosFilePicker.pickFile().then(data => {
+      this.checkForLocalFolder("file://" + data);
+    }).catch(error => {
+
+    })
+  }
+
+  // For android
+  openFilePicker() {
+    this.fileChooser.open()
+      .then(filePath => {
+        this.filePath.resolveNativePath(filePath).then(data => {
+          this.checkForLocalFolder(data);
+        }).catch(err => {
+        })
+      })
+      .catch(e => console.log(e));
   }
 
   openCamera(): void {
@@ -137,36 +183,27 @@ export class ImageUploadComponent implements OnInit {
       mediaType: this.camera.MediaType.PICTURE,
       sourceType: this.camera.PictureSourceType.CAMERA
     }
-    console.log("Open Camera");
     this.camera.getPicture(options).then(imagePath => {
-      // con
       this.checkForLocalFolder(imagePath);
       this.saveToLibrary(imagePath);
     }).catch(error => {
-      // console.log(JSON.stringify(error))
     })
   }
 
   saveToLibrary(url): void {
     this.photoLibrary.saveImage(url, 'samiksha').then(data => {
-      // console.log("saved " + data)
     }).catch(error => {
-      // console.log("error " + error)
     })
   }
 
   checkForLocalFolder(imagePath) {
     let currentName = imagePath.substr(imagePath.lastIndexOf('/') + 1);
     let currentPath = imagePath.substr(0, imagePath.lastIndexOf('/') + 1);
-
     if (this.isIos) {
-      console.log("Ios ")
       this.file.checkDir(this.file.documentsDirectory, 'images').then(success => {
         this.copyFileToLocalDir(currentPath, currentName);
       }).catch(err => {
-
         this.file.createDir(cordova.file.documentsDirectory, 'images', false).then(success => {
-
           this.copyFileToLocalDir(currentPath, currentName)
         }, error => { })
       });
@@ -191,47 +228,49 @@ export class ImageUploadComponent implements OnInit {
   }
 
   copyFileToLocalDir(namePath, currentName) {
-    // console.log("Copy file");
-    // console.log("namePath " + namePath);
-    // console.log("currentname " + currentName);
-    // console.log("destination path " + this.appFolderPath);
-
     // this.file.resolveLocalFilesystemUrl(namePath).then(succes => {
     //   console.log("Resolved  path " + JSON.stringify(succes.nativeURL))
     // }).catch(error => {
 
     // })
     this.file.copyFile(namePath, currentName, this.appFolderPath, currentName).then(success => {
-      // console.log(JSON.stringify(success));
-      this.pushToImageList(currentName);
+      this.pushToFileList(currentName);
     }, error => {
-      // console.log("error" + JSON.stringify(error));
     });
   }
 
-  pushToImageList(fileName) {
+  pushToFileList(fileName) {
     this.file.checkFile(this.appFolderPath + '/', fileName).then(response => {
-      this.file.readAsDataURL(this.appFolderPath, fileName).then(data => {
-        this.imageList.push({data: data, imageName: fileName });
-        this.datas.fileName.push(fileName);
-        console.log("Update local list")
-        console.log(this.submissionId + " " + this.evidenceId)
+      if (this.imageFormats.indexOf(this.getExtensionFromName(fileName)) >= 0) {
+        this.file.readAsDataURL(this.appFolderPath, fileName).then(data => {
+          this.imageList.push({ data: data, imageName: fileName, extension: this.getExtensionFromName(fileName) });
+          this.setLocalDatas(fileName);        
+        }).catch(err => {
+        })
+      } else {
+        this.imageList.push({ data: "", imageName: fileName, extension: this.getExtensionFromName(fileName) });
+        this.setLocalDatas(fileName);    
+        // this.updateLocalImageList();
+      }
 
-        console.log(this.localEvidenceImageList);
-        if(!this.generalQuestion){
-          this.allLocalImageList[this.submissionId][this.evidenceId].push({ name: fileName,  uploaded: false});
-        } else {
-        this.allLocalImageList[this.submissionId].push({ name: fileName,  uploaded: false});
-        }
-        this.updateLocalImageList();
-
-        // console.log(JSON.stringify(this.data.imageNames))
-      }).catch(err => {
-
-      })
     }).catch(error => {
-      // console.log('Error ' + JSON.stringify(error))
     })
+  }
+
+  setLocalDatas(fileName ) {
+    this.datas.fileName.push(fileName);
+    // if (!this.generalQuestion) {
+    //   this.allLocalImageList[this.submissionId][this.evidenceId].push({ name: fileName, uploaded: false });
+    // } else {
+    //   this.allLocalImageList[this.submissionId].push({ name: fileName, uploaded: false });
+    // }
+               this.updateLocalImageList();
+  }
+
+  getExtensionFromName(fileName) {
+    let splitString = fileName.split('.');
+    let extension = splitString[splitString.length - 1];
+    return extension
   }
 
   createImageFromName(imageList) {
@@ -239,15 +278,20 @@ export class ImageUploadComponent implements OnInit {
     this.appFolderPath = this.isIos ? cordova.file.documentsDirectory + 'images' : cordova.file.externalDataDirectory + 'images';
     for (const image of imageList) {
       this.file.checkFile(this.appFolderPath + '/', image).then(response => {
-        this.file.readAsDataURL(this.appFolderPath, image).then(data => {
-          this.imageList.push({data: data, imageName: image});
 
-        }).catch(err => {
-
-        })
+        if (this.imageFormats.indexOf(this.getExtensionFromName(image)) >= 0) {
+          this.file.readAsDataURL(this.appFolderPath, image).then(data => {
+            this.imageList.push({ data: data, imageName: image, extension: this.getExtensionFromName(image) });
+            // this.setLocalDatas(fileName);
+          }).catch(err => {
+          })
+        } else {
+          this.imageList.push({ data: "", imageName: image, extension: this.getExtensionFromName(image) });
+          // this.setLocalDatas(image);
+          // this.updateLocalImageList();
+        }
       }).catch(error => {
         this.imageList.push(image);
-        // console.log('Error ' + JSON.stringify(error))
       })
     }
   }
@@ -261,50 +305,49 @@ export class ImageUploadComponent implements OnInit {
       for (const image of imageData) {
         this.checkForLocalFolder(image);
       }
-      // console.log('Image URI: ' + imageData);
     })
   }
 
   removeImgFromList(index): void {
-    // console.log(this.localEvidenceImageList);
-    // this.file.removeFile(this.appFolderPath + '/', this.datas.fileName[index]).then(success => {
-      let indexInLocalList;
-      if(!this.generalQuestion) {
-        for (let i = 0; i < this.allLocalImageList[this.submissionId][this.evidenceId].length; i++) {
-          if (this.allLocalImageList[this.submissionId][this.evidenceId].name === this.imageList[index].imageName) {
-            indexInLocalList = i;
-          }
-        }
-        this.allLocalImageList[this.submissionId][this.evidenceId].splice(indexInLocalList, 1);
-      } else {
-        console.log("remove image else")
-        for (let i = 0; i < this.allLocalImageList[this.submissionId].length; i++) {
-          if (this.allLocalImageList[this.submissionId].name === this.imageList[index].imageName) {
-            indexInLocalList = i;
-          }
-        }
-        this.allLocalImageList[this.submissionId].splice(indexInLocalList, 1);
-      }
-      this.datas.fileName.splice(index, 1);
-      this.imageList.splice(index, 1);
-      this.updateLocalImageList();
-    // })
+    let indexInLocalList;
+    // if (!this.generalQuestion) {
+    //   for (let i = 0; i < this.allLocalImageList[this.submissionId][this.evidenceId].length; i++) {
+    //     if (this.allLocalImageList[this.submissionId][this.evidenceId].name === this.imageList[index].imageName) {
+    //       indexInLocalList = i;
+    //     }
+    //   }
+    //   this.allLocalImageList[this.submissionId][this.evidenceId].splice(indexInLocalList, 1);
+    // } else {
+    //   for (let i = 0; i < this.allLocalImageList[this.submissionId].length; i++) {
+    //     if (this.allLocalImageList[this.submissionId].name === this.imageList[index].imageName) {
+    //       indexInLocalList = i;
+    //     }
+    //   }
+    //   this.allLocalImageList[this.submissionId].splice(indexInLocalList, 1);
+    // }
+    this.datas.fileName.splice(index, 1);
+    this.imageList.splice(index, 1);
+    this.updateLocalImageList();
   }
 
   deleteImageAlert(index) {
+    let translateObject ;
+          this.translate.get(['actionSheet.confirmDelete','actionSheet.confirmDeleteInstance','actionSheet.no','actionSheet.yes']).subscribe(translations =>{
+            translateObject = translations;
+            console.log(JSON.stringify(translations))
+          })
     let alert = this.alertCtrl.create({
-      title: 'Confirm',
-      message: 'Do you want to delete this image?',
+      title: translateObject['actionSheet.confirmDelete'],
+      message:translateObject['actionSheet.confirmDeleteInstance'],
       buttons: [
         {
-          text: 'No',
+          text: translateObject['actionSheet.no'],
           role: 'cancel',
           handler: () => {
-            console.log('Cancel clicked');
           }
         },
         {
-          text: 'Yes',
+          text: translateObject['actionSheet.yes'],
           handler: () => {
             this.removeImgFromList(index);
           }
@@ -315,11 +358,140 @@ export class ImageUploadComponent implements OnInit {
   }
 
   updateLocalImageList() {
-    console.log("Image lsit");
-    console.log(this.generalQuestion)
-    // this.allLocalImageList[this.evidenceId] = this.localEvidenceImageList;
-    console.log("LOcal image List" + JSON.stringify(this.allLocalImageList))
-    this.utils.setLocalImages(this.allLocalImageList, this.generalQuestion);
+    // this.localStorage.getLocalStorage(this.generalQuestion ? 'genericQuestionsImages' : 'allImageList').then( data =>{
+    //   data = JSON.parse(data);
+      
+    //   if(!this.generalQuestion)
+    //   data[this.submissionId][this.evidenceId] = [...data[this.submissionId][this.evidenceId], ...this.allLocalImageList][this.submissionId][this.evidenceId] ;
+    //   else 
+    //   data[this.submissionId] = [ ... data[this.submissionId] , ... this.allLocalImageList][this.submissionId] ;
+
+    //   this.localStorage.setLocalStorage(this.generalQuestion ? 'genericQuestionsImages' : 'allImageList' , JSON.stringify(data))
+    //   // this.utils.setLocalImages(this.allLocalImageList, this.generalQuestion);
+    //   this.localStorage.getLocalStorage(this.generalQuestion ? 'genericQuestionsImages' : 'allImageList').then( data =>{
+    //     console.log(data   + " updating");
+    //     this.allLocalImageList = JSON.parse(data)
+    // }).catch(error =>{});
+
+
+    // }).catch( data =>{
+    //   this.localStorage.setLocalStorage(this.generalQuestion ? 'genericQuestionsImages' : 'allImageList' , JSON.stringify(this.allLocalImageList));
+    //   this.localStorage.getLocalStorage(this.generalQuestion ? 'genericQuestionsImages' : 'allImageList').then( data =>{
+    //     console.log(data + " setting");
+    //     this.allLocalImageList = JSON.parse(data)
+
+    // }).catch(error =>{});
+
+    // })
   }
+
+  previewFile(fileName,extension) {
+    this.fileOpener.open(this.appFolderPath+'/'+fileName, FILE_EXTENSION_HEADERS[extension])
+      .then(() => console.log('File is opened'))
+      .catch(e =>{
+        this.utils.openToast('No file readers available');
+      })
+  }
+
+
+
+  startRecord() {
+    
+    if (this.platform.is('ios')) {
+      this.file.checkDir(this.file.documentsDirectory, 'images').then(success => {
+        this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
+        this.filesPath = this.file.documentsDirectory +"images/"+ this.fileName;
+        this.audio = this.media.create(this.filesPath);
+        
+        this.audio.startRecord();
+        this.checkRecordMediaPermission();
+       
+        // this.startTimer();
+
+        // this.pushToFileList(this.fileName );
+        // this.datas.fileName.push(this.fileName);
+
+
+      }).catch(err => {
+        this.file.createDir(cordova.file.documentsDirectory, 'images', false).then(success => {
+          this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
+          this.filesPath = this.file.documentsDirectory+"images/" + this.fileName;
+          this.audio = this.media.create(this.filesPath);
+        this.audio.startRecord();
+        this.checkRecordMediaPermission();
+       
+        // this.datas.fileName.push(this.fileName);
+
+        }, error => { })
+      });
+
+      
+    } else if (this.platform.is('android')) {
+      this.file.checkDir(this.file.externalDataDirectory, 'images').then(success => {
+        this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
+        this.filesPath = this.file.externalDataDirectory +"images/"+ this.fileName;
+        console.log(this.filePath)
+        this.audio = this.media.create(this.filesPath);
+        
+        this.audio.startRecord();
+        this.checkRecordMediaPermission();
+       
+        // this.datas.fileName.push(this.fileName);
+
+      }).catch(err => {
+        console.log("No image File")
+
+        this.file.createDir(cordova.file.externalDataDirectory, 'images', false).then(success => {
+          console.log("file created with name image")
+        this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
+        this.filesPath = this.file.externalDataDirectory+"images/"+this.fileName;
+        console.log(this.filePath)
+        this.audio = this.media.create(this.filesPath);
+        this.checkRecordMediaPermission();
+        // this.startTimer();
+        this.audio.startRecord();
+       
+        // this.datas.fileName.push(this.fileName);
+
+        }, error => { })
+      });
+
+     
+    }
+  }
+  startTimer() {
+    this.recording = true;
+    if(this.recording){
+    this.interval = setInterval(() => {
+      if(this.timeLeft >= 0) {
+        this.timeLeft++;
+         console.log(this.timeLeft)
+        this.minutes = Math.ceil(this.timeLeft / 60) - 1;
+        this.seconds = Math.floor(this.timeLeft % 60)
+      } else {
+        this.timeLeft = 0;
+        this.minutes = 0;
+        this.seconds = 0;
+      }
+    },1000)
+  }
+ 
+  }
+  checkRecordMediaPermission(){
+    this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO).then(
+      result => {
+         result.hasPermission ? this.startTimer() :null;
+      }).catch();
+  }
+  stopRecord() {
+    this.recording = false;
+    this.timeLeft = 0;
+    this.minutes = 0;
+    this.seconds = 0;
+    clearInterval(this.interval)
+    this.audio.stopRecord();
+    this.pushToFileList(this.fileName  );
+  }
+
 
 }

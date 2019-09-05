@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, Events, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, Events, AlertController, PopoverController } from 'ionic-angular';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
 import { AssessmentServiceProvider } from '../../providers/assessment-service/assessment-service';
 import { AppConfigs } from '../../providers/appConfig';
@@ -8,6 +8,10 @@ import { ActionSheetController } from 'ionic-angular';
 import { ObservationDetailsPage } from '../observation-details/observation-details';
 import { ApiProvider } from '../../providers/api/api';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { TranslateService } from '@ngx-translate/core';
+import { GenericMenuPopOverComponent } from '../../components/generic-menu-pop-over/generic-menu-pop-over';
+import { ObservationProvider } from '../../providers/observation/observation';
+import { ObservationServiceProvider } from '../../providers/observation-service/observation-service';
 
 
 @IonicPage()
@@ -28,18 +32,22 @@ export class ObservationsPage {
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
+    private observationProvider: ObservationServiceProvider,
     public app: App,
     public utils: UtilsProvider,
     public alertCntrl: AlertController,
     private localStorage: LocalStorageProvider,
     private assessmentService: AssessmentServiceProvider,
     private apiProviders: ApiProvider,
+    private translate : TranslateService,
+    private popoverCtrl : PopoverController,
     private events: Events,
     public actionSheetCtrl: ActionSheetController
   ) {
     this.events.subscribe('draftObservationArrayReload', () => {
       this.getDraftObservation();
     })
+  
   }
 
   ionViewDidLoad() {
@@ -49,10 +57,12 @@ export class ObservationsPage {
 
   getFromLocal() {
     this.localStorage.getLocalStorage('createdObservationList').then(data => {
+      this.utils.startLoader();
       if (data) {
         this.createdObservation = [...data];
+        console.log(JSON.stringify(data))
         this.countCompleteActive();
-
+        this.utils.stopLoader();
       } else {
         this.getCreatedObservation();
       }
@@ -87,7 +97,12 @@ export class ObservationsPage {
       this.createdObservation.forEach(element => {
         if (element.entities.length >= 0) {
           element.entities.forEach(entity => {
-            entity.downloaded = false;
+            // entity.downloaded = false;
+            if(entity.submissions && entity.submissions.length > 0){
+              entity.submissions.forEach( submission =>{
+                submission['downloaded'] = false;
+              })
+            }
           });
         }
       });
@@ -120,54 +135,60 @@ export class ObservationsPage {
   }
 
   refresh(event?: any) {
-    const url = AppConfigs.cro.observationList;
+    this.observationProvider.refreshObservationList(this.createdObservation , event).then(observationList =>{
+      this.createdObservation =observationList;
+      console.log(JSON.stringify(observationList))
+    }).catch();
+
+    // const url = AppConfigs.cro.observationList;
     // const url = AppConfigs.survey.fetchIndividualAssessments + "?type=assessment&subType=individual&status=active";
-    event ? "" : this.utils.startLoader();
-    this.apiProviders.httpGet(url, successData => {
-      const downloadedAssessments = []
-      const currentObservation = successData.result;
-      for (const observation of this.createdObservation) {
-        for (const entity of observation.entities) {
-          if (entity.downloaded) {
-            downloadedAssessments.push({
-              id: entity._id,
-              observationId: observation._id,
-              submissionId: entity.submissionId
-            });
-          }
-        }
+    // event ? "" : this.utils.startLoader();
+    // this.apiProviders.httpGet(url, successData => {
+      // console.log(JSON.stringify(this.createdObservation))
+      // const downloadedAssessments = []
+      // const currentObservation = successData.result;
+      // for (const observation of this.createdObservation) {
+      //   for (const entity of observation.entities) {
+      //     if (entity.submissionId) {
+      //       downloadedAssessments.push({
+      //         id: entity._id,
+      //         observationId: observation._id,
+      //         submissionId: entity.submissionId
+      //       });
+      //     }
+      //   }
 
-      }
+      // }
 
-      if (!downloadedAssessments.length) {
-        this.createdObservation = successData.result;
-        this.localStorage.setLocalStorage('createdObservationList', successData.result);
-        event ? event.complete() : this.utils.stopLoader();
+      // if (!downloadedAssessments.length) {
+      //   this.createdObservation = successData.result;
+      //   this.localStorage.setLocalStorage('createdObservationList', successData.result);
+      //   event ? event.complete() : this.utils.stopLoader();
 
-      } else {
-        downloadedAssessments.forEach(element => {
+      // } else {
+      //   downloadedAssessments.forEach(element => {
 
-          for (const observation of successData.result) {
-            if (observation._id === element.observationId) {
-              for (const entity of observation.entities) {
-                if (element.id === entity._id) {
-                  entity.downloaded = true;
-                  entity.submissionId = element.submissionId;
+      //     for (const observation of successData.result) {
+      //       if (observation._id === element.observationId) {
+      //         for (const entity of observation.entities) {
+      //           if (element.id === entity._id) {
+      //             // entity.downloaded = true;
+      //             entity.submissionId = element.submissionId;
 
-                }
-              }
-            }
-          }
-        });
-        this.localStorage.setLocalStorage('createdObservationList', successData.result);
-        this.createdObservation = successData.result;
-        event ? event.complete() : this.utils.stopLoader();
+      //           }
+      //         }
+      //       }
+      //     }
+      //   });
+      //   this.localStorage.setLocalStorage('createdObservationList', successData.result);
+      //   this.createdObservation = successData.result;
+      //   event ? event.complete() : this.utils.stopLoader();
 
-      }
+      // }
       this.countCompleteActive();
 
-    }, error => {
-    });
+    // }, error => {
+    // });
 
 
   }
@@ -196,8 +217,15 @@ export class ObservationsPage {
     })
   }
 
-  openMenu(event) {
-    this.assessmentService.openMenu(event, this.programs, false);
+  openMenu(event , index) {
+    // this.assessmentService.openMenu(event, this.programs, false);
+    console.log("open menu")
+    let popover = this.popoverCtrl.create(GenericMenuPopOverComponent , { showAbout : true , assessmentIndex : index , assessmentName :'createdObservationList'})
+  
+    popover.present(
+      {ev:event}
+      );
+      
   }
 
 

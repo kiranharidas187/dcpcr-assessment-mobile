@@ -53,9 +53,9 @@
     <ion-step label="Solution">
       <!-- <h4>Solution List</h4> -->
       <div class="fixBox" *ngIf="listOfSolution">
-          <ion-label>Select a solution</ion-label>
-
-        <ion-list margin-top *ngFor="let frameWork of listOfSolution">
+          <ion-label>{{'ionLabel.selectSolution' | translate}}</ion-label>
+          <ion-searchbar debounce="500" (ionClear)="clearSolution()" autofocus (ionChange)="searchSolution($event)" placeholder="{{'message.startSearchSolution' | translate}}"></ion-searchbar>
+         <ion-list margin-top *ngFor="let frameWork of listOfSolution">
           <ion-item (click)="selectSolution(frameWork._id)" [ngClass]="{'active': frameWork._id === selectedFrameWork}">
             <ion-icon name="list-box" item-start></ion-icon>
             <h2>{{frameWork.name}} </h2>
@@ -63,7 +63,14 @@
             <button ion-button clear item-end (click)="showDetails(frameWork)">View</button>
           </ion-item>
         </ion-list>
+        <div *ngIf="listOfSolution?.length == 0"  class="_flex-box msgContainer">
+            {{'message.noSolutionFound' | translate}}
+        </div>
       </div>
+      <ion-infinite-scroll [enabled]="!(this.listOfSolution?.length === totalCount) && this.listOfSolution?.length > 0" (ionInfinite)="doInfinite($event)">
+        <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+        </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
     </ion-step>
 
 
@@ -76,6 +83,10 @@
       </div>
     </ion-step>
   </ion-stepper>
+  <!-- <ion-infinite-scroll [enabled]="!(this.listOfSolution?.length === totalCount) && this.listOfSolution?.length > 0" (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+</ion-infinite-scroll> -->
 </ion-content>
 
 

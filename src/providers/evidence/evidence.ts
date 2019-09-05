@@ -9,6 +9,7 @@ import { AppConfigs } from '../appConfig';
 import { ApiProvider } from '../api/api';
 import { RemarksPage } from '../../pages/remarks/remarks';
 import { LocalStorageProvider } from '../local-storage/local-storage';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
 export class EvidenceProvider {
@@ -19,7 +20,8 @@ export class EvidenceProvider {
 
   constructor(public http: HttpClient, private actionSheet: ActionSheetController,
     private appCtrl: App, private storage: Storage, private utils: UtilsProvider,
-    private diagnostic: Diagnostic, private netwrkGpsProvider: NetworkGpsProvider, private localStorage: LocalStorageProvider,
+    private diagnostic: Diagnostic, private translate : TranslateService,
+    private netwrkGpsProvider: NetworkGpsProvider, private localStorage: LocalStorageProvider,
     private apiService: ApiProvider, private alertCtrl: AlertController, private modalCtrl: ModalController) {
     console.log('Hello EvidenceProvider Provider');
     this.storage.get('schools').then(data => {
@@ -34,20 +36,16 @@ export class EvidenceProvider {
     this.schoolId = params._id;
     this.evidenceIndex = params.selectedEvidence;
     const selectedECM =  this.entityDetails['assessment']['evidences'][this.evidenceIndex] ;
-
-    let action = this.actionSheet.create({
-      title: "Survey actions",
+    let translateObject ;
+    this.translate.get(['actionSheet.surveyAction','actionSheet.view','actionSheet.start','actionSheet.ecmNotApplicable','actionSheet.cancel','actionSheet.ecmNotAllowed']).subscribe(translations =>{
+      translateObject = translations;
+      console.log(JSON.stringify(translations))
+    let action = this.actionSheet.create(
+      {
+      title: translateObject['actionSheet.surveyAction'],
       buttons: [
         {
-          text: "View "+type,
-          icon: "eye",
-          handler: () => {
-            delete params.entityDetails;
-            this.appCtrl.getRootNav().push('SectionListPage', params);
-          }
-        },
-        {
-          text: "Start "+type,
+          text: translateObject['actionSheet.start']+" "+type,
           icon: 'arrow-forward',
           handler: () => {
             this.diagnostic.isLocationEnabled().then(success => {
@@ -71,7 +69,15 @@ export class EvidenceProvider {
           }
         },
         {
-          text: selectedECM.canBeNotApplicable ? "ECM Not Applicable" : 'Cancel',
+          text:translateObject['actionSheet.view']+" "+type,
+          icon: "eye",
+          handler: () => {
+            delete params.entityDetails;
+            this.appCtrl.getRootNav().push('SectionListPage', params);
+          }
+        },
+        {
+          text: selectedECM.canBeNotApplicable ? translateObject['actionSheet.ecmNotApplicable'] : translateObject['actionSheet.cancel'],
           role: !selectedECM.canBeNotApplicable ? 'destructive' : "",
           icon: selectedECM.canBeNotApplicable ? "alert" : "",
           handler: () => {
@@ -85,7 +91,7 @@ export class EvidenceProvider {
     })
     // console.dir(action);
      const notAvailable =({
-      text: "ECM Not Allowed",
+      text: translateObject['actionSheet.ecmNotAllowed'],
       icon: "alert",
       handler: () => {
         delete params.entityDetails;
@@ -93,7 +99,7 @@ export class EvidenceProvider {
       }
     })
     if(selectedECM.canBeNotAllowed) {
-      action.data.buttons.splice(action.data.buttons.length-1, 0, notAvailable);
+      action.data.buttons.splice(action.data.buttons.length-1, 0 , notAvailable);
     }
     // if(selectedECM.canBeNotApplicable) {
     //   action['buttons'].push(
@@ -106,7 +112,10 @@ export class EvidenceProvider {
     // }
     //   )
     // }
+    
     action.present();
+  })
+
   }
 
   openRemarksModal(selectedECM): void {
@@ -121,19 +130,24 @@ export class EvidenceProvider {
   }
 
   openAlert(selectedECM): void {
+    let translateObject ;
+          this.translate.get(['actionSheet.confirm','actionSheet.cancel','actionSheet.confirm','actionSheet.ecmNotApplicableMessage']).subscribe(translations =>{
+            translateObject = translations;
+            console.log(JSON.stringify(translations))
+          })
     let alert = this.alertCtrl.create({
-      title: 'Confirm ',
-      message: 'Do you want mark ECM as not applicable / not allowed?',
+      title: translateObject['actionSheet.confirm'],
+      message: translateObject['actionSheet.ecmNotApplicableMessage'],
       buttons: [
         {
-          text: 'Cancel',
+          text: translateObject['actionSheet.cancel'],
           role: 'cancel',
           handler: () => {
             console.log('Cancel clicked');
           }
         },
         {
-          text: 'Confirm',
+          text:translateObject['actionSheet.confirm'],
           handler: () => {
             // console.log('Buy clicked');
             // this.notApplicable(selectedECM);

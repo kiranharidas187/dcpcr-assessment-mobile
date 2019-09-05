@@ -7,7 +7,7 @@ import { SchoolListProvider } from '../../providers/school-list/school-list';
   templateUrl: 'input-type.html'
 })
 export class InputTypeComponent implements OnInit {
-
+  @Input() inputIndex ;
   @Input() data: any;
   @Input() isLast: boolean;
   @Input() isFirst: boolean;

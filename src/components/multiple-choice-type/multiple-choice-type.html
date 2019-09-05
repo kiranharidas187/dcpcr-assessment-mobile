@@ -1,6 +1,15 @@
 <!-- Generated template for the InputTypeComponent component -->
 <ion-col class="_flex-box _justify-content-center _flex-direction-column ">
-  <h4 [ngClass]="{'_validQuestion': data?.value?.length}" *ngFor="let question of data.question">{{question}}</h4>
+  <h4 [ngClass]="{'_validQuestion': data?.value?.length}" class="flexbox">
+    <!-- <div class="noWrap">{{inputIndex}} .</div>
+    <div padding-left>
+      <div *ngFor="let question of data.question">
+        {{question}}
+      </div>
+    </div> -->
+    <question-heading [inputIndex]="inputIndex" [data]="data"></question-heading>
+
+  </h4>
 </ion-col>
 <div class="_tip _flex-box "> {{data?.tip}} </div>
 
@@ -8,14 +17,21 @@
   <ion-list>
 
     <ion-item *ngFor="let option of data?.options" text-wrap>
-      <ion-label>{{option.label}}</ion-label>
-      <ion-checkbox [checked]="data.value.includes(option.value)" (ionChange)="updateModelValue(option.value)"></ion-checkbox>
+      <ion-label class="_flex-box label" text-wrap>
+        <ion-icon name="bulb" class="help" (click)="openHint(option?.hint)" *ngIf="option?.hint"></ion-icon>
+        <div style="flex: 1" [ngStyle]="{'margin-right': option?.hint ? '35px' :'0px'}"> {{option?.label}} </div>
+      </ion-label>
+      <ion-checkbox [checked]="data.value.includes(option.value)" (ionChange)="updateModelValue(option.value)">
+      </ion-checkbox>
+      <!-- <ion-label>{{option?.label}}</ion-label> -->
+
     </ion-item>
 
   </ion-list>
-   <!-- {{schoolId}} - {{evidenceId}} -->
+  <!-- {{schoolId}} - {{evidenceId}} -->
   <remarks *ngIf="data?.showRemarks" [data]="data"></remarks>
-  <image-upload *ngIf="data?.file" [submissionId]="submissionId" [data]="data" [generalQuestion]="generalQuestion" [imageLocalCopyId]="imageLocalCopyId" [evidenceId]="evidenceId" [schoolId]="schoolId"></image-upload>
+  <image-upload  [submissionId]="submissionId" [data]="data" [generalQuestion]="generalQuestion"
+    [imageLocalCopyId]="imageLocalCopyId" [evidenceId]="evidenceId" [schoolId]="schoolId"></image-upload>
 
 </div>
 
@@ -51,4 +67,4 @@
     </ion-row>
   </div> -->
 
-  <!-- <footer-buttons *ngIf="!hideButton" [isFirst]="isFirst" [isLast]="isLast" (nextAction)="next()" (backAction)="back()"></footer-buttons> -->
+<!-- <footer-buttons *ngIf="!hideButton" [isFirst]="isFirst" [isLast]="isLast" (nextAction)="next()" (backAction)="back()"></footer-buttons> -->

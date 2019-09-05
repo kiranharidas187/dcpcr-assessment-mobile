@@ -1,11 +1,19 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController, Events } from 'ionic-angular';
+import { NavController, NavParams, AlertController, Events, Platform } from 'ionic-angular';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
 import { AssessmentServiceProvider } from '../../providers/assessment-service/assessment-service';
 import { UtilsProvider } from '../../providers/utils/utils';
 import { EvidenceProvider } from '../../providers/evidence/evidence';
 import { ApiProvider } from '../../providers/api/api';
 import { AppConfigs } from '../../providers/appConfig';
+import { TranslateService } from '@ngx-translate/core';
+import { SubmissionListPage } from '../submission-list/submission-list';
+import { ObservationServiceProvider } from '../../providers/observation-service/observation-service';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+import { DownloadAndPreviewProvider } from '../../providers/download-and-preview/download-and-preview';
+
+declare var cordova: any;
+
 
 @Component({
   selector: 'page-observation-details',
@@ -16,6 +24,11 @@ export class ObservationDetailsPage {
   observationDetails = [];
   programs: any;
   enableCompleteBtn: boolean;
+  selectedObservationIndex: any;
+  observationList: any;
+  firstVisit = true;
+  isIos: boolean;
+  appFolderPath;
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -23,32 +36,163 @@ export class ObservationDetailsPage {
     private assessmentService: AssessmentServiceProvider,
     private utils: UtilsProvider,
     private evdnsServ: EvidenceProvider,
+    private translate: TranslateService,
+    private observationService:ObservationServiceProvider,
+    private observationProvider : ObservationServiceProvider,
     private apiProvider: ApiProvider,
     private localStorage: LocalStorageProvider,
+    private fileTransfr: FileTransfer,
+    private platform: Platform,
     private events: Events) {
 
-      this.events.subscribe('observationLocalstorageUpdated', success => {
-        this.getLocalStorageData();
-      })
+    this.events.subscribe('observationLocalstorageUpdated', success => {
+      this.getLocalStorageData();
+    })
+    this.events.subscribe('refreshObservationList', type => {
+    this.refresh();
+      console.log("refresh obs list")
+    })
   }
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
+    this.selectedObservationIndex = this.navParams.get('selectedObservationIndex');
+
     console.log('ionViewDidLoad ObservationDetailsPage');
     this.getLocalStorageData();
+    this.isIos = this.platform.is('ios') ? true : false;
+    this.appFolderPath = this.isIos ? cordova.file.documentsDirectory + 'submissionDocs' : cordova.file.externalDataDirectory + 'submissionDocs';
   }
 
   ionViewWillEnter() {
     console.log("On view enter")
+    //  if(!this.firstVisit )
+    // this.observationService.refreshObservationList(this.observationList).then( data =>{
+    //   this.programs = data
+    //   this.observationList = data;
+    //   this.observationDetails[0]=data[this.selectedObservationIndex]
+    // })
+  }
+
+  refresh(type = 'normal') {
+    const url = AppConfigs.cro.observationList;
+    this.observationProvider.refreshObservationList(this.observationList).then(observationList =>{
+      this.programs = observationList;
+      this.observationList = observationList;
+      this.observationDetails[0]= (observationList[this.selectedObservationIndex]);
+      this.enableCompleteBtn = this.isAllEntitysCompleted();    
+        console.log(JSON.stringify(observationList))
+    }).catch();
+
+    // const url = AppConfigs.survey.fetchIndividualAssessments + "?type=assessment&subType=individual&status=active";
+    // event ? "" : this.utils.startLoader();
+    // this.apiProvider.httpGet(url, successData => {
+    //   console.log(JSON.stringify(successData))
+    //   console.log("previous data")
+    //   console.log(JSON.stringify(this.observationList))
+
+    //   const downloadedAssessments = []
+    //   const copyOfObservationList = this.observationList;
+    //   const currentObservation = successData.result;
+    //   // if (type == "added") {
+    //   //   copyOfObservationList.forEach(copyOfObservationListObs => {
+    //   //     for (const observation of successData.result) {
+    //   //       if (observation._id === copyOfObservationListObs._id)
+    //   //         observation.forEach(copyOfObservationListEntity => {
+    //   //           for (const entity of observation.entities) {
+    //   //             if (copyOfObservationListEntity._id === entity._id)
+
+
+    //   //               copyOfObservationList.submissions = entity.submissions
+    //   //             copyOfObservationList.submissions.forEach(submission => {
+    //   //               submission.downloaded = false
+    //   //             })
+    //   //           }
+    //   //         });
+    //   //     }
+    //   //   });
+    //   // }
+
+    //   // for (const observation of this.observationList) {
+    //   //   for (const entity of observation.entities) {
+
+    //   //     for (const submission of entity.submissions) {
+    //   //       if (submission.downloaded) {
+    //   //         downloadedAssessments.push(submission._id);
+    //   //       }
+    //   //     }
+    //   //   }
+
+    //   // }
+    //   for (const observation of this.observationList) {
+    //       for (const entity of observation.entities) {
+    //         if (entity.submissionId) {
+    //           downloadedAssessments.push({
+    //             id: entity._id,
+    //             observationId: observation._id,
+    //             submissionId: entity.submissionId
+    //           });
+    //         }
+    //       }
+  
+    //     }
+
+    //   if (!downloadedAssessments.length) {
+    //     this.observationList = successData.result;
+    //     this.localStorage.setLocalStorage('createdObservationList', successData.result);
+    //     // event ? event.complete() : this.utils.stopLoader();
+    //     console.log(JSON.stringify(this.observationList))
+    //     this.observationList = [...successData.result]
+    //     // this.observationDetails = [];
+    //     this.observationDetails[0] = currentObservation[this.selectedObservationIndex];
+    //     this.observationDetails = [...this.observationDetails]
+
+
+    //   } else {
+    //     downloadedAssessments.forEach(element => {
+
+    //       for (const observation of successData.result) {
+    //         if (observation._id === element.observationId) {
+    //           for (const observation of successData.result) {
+    //                   if (observation._id === element.observationId) {
+    //                     for (const entity of observation.entities) {
+    //                       if (element.id === entity._id) {
+    //                         // entity.downloaded = true;
+    //                         entity.submissionId = element.submissionId;
+          
+    //                       }
+    //                     }
+    //                   }
+    //                 }
+    //       }
+    //     }
+    //     });
+    //     this.localStorage.setLocalStorage('createdObservationList', successData.result);
+    //     this.observationList = [...successData.result]
+    //     // this.observationDetails = [];
+    //     // this.observationDetails.push(this.observationList[this.selectedObservationIndex]);
+    //     console.log(JSON.stringify(this.observationDetails))
+    //     this.observationDetails[0] = currentObservation[this.selectedObservationIndex];
+    //     this.observationDetails = [...this.observationDetails]
+    //     // event ? event.complete() : this.utils.stopLoader();
+
+    //   }
+    // }, error => {
+    // });
+
+
   }
 
   getLocalStorageData() {
     this.observationDetails = [];
-    const selectedObservationIndex = this.navParams.get('selectedObservationIndex');
     this.localStorage.getLocalStorage('createdObservationList').then(data => {
       this.programs = data;
-      this.observationDetails.push(data[selectedObservationIndex]);
+      this.observationList = data;
+      this.observationDetails.push(data[this.selectedObservationIndex]);
       this.enableCompleteBtn = this.isAllEntitysCompleted();
+      this.firstVisit = false;
     }).catch(error => {
+      this.firstVisit = false;
+
     })
   }
 
@@ -56,7 +200,7 @@ export class ObservationDetailsPage {
   isAllEntitysCompleted() {
     let completed = true;
     for (const entity of this.observationDetails[0]['entities']) {
-      if (entity.submissionStatus !== 'completed' ) {
+      if (entity.submissionStatus !== 'completed') {
         return false
       }
     }
@@ -64,10 +208,15 @@ export class ObservationDetailsPage {
   }
 
   markAsComplete() {
+    let translateObject;
+    this.translate.get(['actionSheet.confirm', 'actionSheet.completeobservation', 'actionSheet.restrictAction', 'actionSheet.no', 'actionSheet.yes']).subscribe(translations => {
+      translateObject = translations;
+      console.log(JSON.stringify(translations))
+    })
     let alert = this.alertCntrl.create({
-      title: 'Confirm',
-      message: `Are you sure you want to mark this observation as complete? <br>
-      Further you won't be able to do any kind of action.`,
+      title: translateObject['actionSheet.confirm'],
+      message: translateObject['actionSheet.completeobservation'] + `<br>` +
+        translateObject['actionSheet.restrictAction'],
       buttons: [
         {
           text: 'No',
@@ -76,14 +225,16 @@ export class ObservationDetailsPage {
           }
         },
         {
-          text: 'Yes',
+          text: translateObject['actionSheet.yes'],
           handler: () => {
             console.log(this.programs[this.navParams.get('selectedObservationIndex')]._id);
 
             this.apiProvider.httpGet(AppConfigs.cro.markAsComplete + this.programs[this.navParams.get('selectedObservationIndex')]._id, success => {
               this.programs[this.navParams.get('selectedObservationIndex')].status = "completed"
               this.localStorage.setLocalStorage('createdObservationList', this.programs);
-              this.utils.openToast(success.message, 'ok');
+              this.translate.get('toastMessage.ok').subscribe(translations => {
+                this.utils.openToast(success.message, translations);
+              })
               this.navCtrl.pop();
             }, error => {
 
@@ -95,51 +246,60 @@ export class ObservationDetailsPage {
   }
 
 
-  getAssessmentDetails(event) {
-    event.observationIndex = this.navParams.get('selectedObservationIndex');
-    this.assessmentService.getAssessmentDetailsOfCreatedObservation(event, this.programs, 'createdObservationList').then(program => {
-      this.programs = program;
-      this.goToEcm(this.navParams.get('selectedObservationIndex'), event, program);
-    }).catch(error => {
+  // getAssessmentDetails(event) {
+  //   // console.log("getting assessment details")
+  //   event.observationIndex = this.navParams.get('selectedObservationIndex');
+  //   // console.log(this.observationDetails[event.programIndex].entities[event.entityIndex].submissions.length)
+  //   this.assessmentService.getAssessmentDetailsOfCreatedObservation(event, this.programs, 'createdObservationList').then(program => {
+  //     this.programs = program;
+  //     // console.log(JSON.stringify(program))
 
-    })
-  }
+  //     this.goToEcm(this.navParams.get('selectedObservationIndex'), event, program)
+  //   }).catch(error => {
 
-  goToEcm(observationIndex, event, program) {
-    let submissionId = program[observationIndex]['entities'][event.entityIndex].submissionId
-    let heading = program[observationIndex]['entities'][event.entityIndex].name;
-    this.localStorage.getLocalStorage(this.utils.getAssessmentLocalStorageKey(submissionId)).then(successData => {
-      if (successData.assessment.evidences.length > 1) {
-        this.navCtrl.push('EvidenceListPage', { _id: submissionId, name: heading })
-      } else {
-        if (successData.assessment.evidences[0].startTime) {
-          this.utils.setCurrentimageFolderName(successData.assessment.evidences[0].externalId, submissionId)
-          this.navCtrl.push('SectionListPage', { _id: submissionId, name: heading, selectedEvidence: 0 })
-        } else {
-          const assessment = { _id: submissionId, name: heading }
-          this.openAction(assessment, successData, 0);
-        }
-      }
-    }).catch(error => {
-    });
+  //   })
+  // }
 
-  }
+  // goToSubmissionListPage(observationIndex, entityIndex) {
+  //   this.navCtrl.push(SubmissionListPage, { observationIndex: observationIndex, entityIndex: entityIndex, selectedObservationIndex: this.navParams.get('selectedObservationIndex') })
+  // }
+
+  // goToEcm(observationIndex, event, program) {
+  //   console.log("Assesment details")
+  //   let submissionId = program[observationIndex]['entities'][event.entityIndex].submissionId
+  //   let heading = program[observationIndex]['entities'][event.entityIndex].name;
+  //   if (this.observationDetails[event.programIndex].entities[event.entityIndex].submissions[0] && this.observationDetails[event.programIndex].entities[event.entityIndex].submissions.length > 0) {
+  //     this.goToSubmissionListPage(event.programIndex, event.entityIndex)
+  //   } else {
+  //     // console.log(this.observationDetails[event.programIndex].entities[event.entityIndex].submissions.length)
+  //     this.localStorage.getLocalStorage(this.utils.getAssessmentLocalStorageKey(submissionId)).then(successData => {
+  //       // console.log(JSON.stringify(successData.assessment))
+  //       if (successData.assessment.evidences.length > 1) {
+  //         this.navCtrl.push('EvidenceListPage', { _id: submissionId, name: heading })
+  //       } else {
+  //         //   if (this.observationDetails[event.programIndex].entities[event.entityIndex].submissions.length > 0 ){
+  //         //   this.goToSubmissionListPage(event.programIndex,event.entityIndex)
+  //         // }else {
+  //         if (successData.assessment.evidences[0].startTime) {
+  //           this.utils.setCurrentimageFolderName(successData.assessment.evidences[0].externalId, submissionId)
+  //           this.navCtrl.push('SectionListPage', { _id: submissionId, name: heading, selectedEvidence: 0 })
+  //         } else {
+  //           const assessment = { _id: submissionId, name: heading }
+  //           this.openAction(assessment, successData, 0);
+  //         }
+  //       }
+  //     }).catch(error => {
+  //     });
+  //   }
+
+  // }
   openAction(assessment, aseessmemtData, evidenceIndex) {
-    // console.log("open action ")
+    // console.log(JSON.stringify(assessment))
+
     this.utils.setCurrentimageFolderName(aseessmemtData.assessment.evidences[evidenceIndex].externalId, assessment._id)
     const options = { _id: assessment._id, name: assessment.name, selectedEvidence: evidenceIndex, entityDetails: aseessmemtData };
     this.evdnsServ.openActionSheet(options, "Observation");
+
   }
-  updateLocalStorage() {
-    this.localStorage.getLocalStorage('createdObservationList').then(data => {
-      data[this.navParams.get('selectedObservationIndex')] = this.observationDetails[0]
-      this.localStorage.setLocalStorage('createdObservationList', data);
-      this.getLocalStorageData();
-    }).catch(error => {
-
-    });
-  }
-
-
-
+  
 }
