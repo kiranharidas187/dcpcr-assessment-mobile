@@ -212,7 +212,7 @@ import { DownloadAndPreviewProvider } from '../providers/download-and-preview/do
     AssessmentServiceProvider,
     Deeplinks,
     ObservationProvider,
-    AccessActionsProvider
+    AccessActionsProvider,
     SocialSharing,
     SharingFeaturesProvider,
     IOSFilePicker,
