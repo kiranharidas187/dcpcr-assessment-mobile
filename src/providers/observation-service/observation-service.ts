@@ -73,7 +73,7 @@ export class ObservationServiceProvider {
 
   refreshObservationList(observationList , event? :any){
     return new Promise((resolve, reject) =>{
-      event ? "" : this.utils.startLoader();
+      // event ? "" : this.utils.startLoader();
       
       let createdObservation ;
       let downloadSubmission =[];
@@ -104,7 +104,7 @@ export class ObservationServiceProvider {
           });
           });
         });
-        event ? event.complete() : this.utils.stopLoader();
+        event ? event.complete() : "";
         console.log(JSON.stringify(createdObservation))
         console.log("if no previous thing found");
 
@@ -135,13 +135,13 @@ export class ObservationServiceProvider {
         // console.log(JSON.stringify(success))
         console.log("else - previous thing found");
         this.localStorage.setLocalStorage('createdObservationList', createdObservation);
-        event ? event.complete() : this.utils.stopLoader();
+        event ? event.complete() : "";
         // this.
         resolve(createdObservation);
      
     }
   },error=>{
-    event ? event.complete() : this.utils.stopLoader();
+    event ? event.complete() : "";
     reject();
   });
     });
