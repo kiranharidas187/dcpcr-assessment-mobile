@@ -10,22 +10,22 @@
 
 <!-- <ion-content> -->
   
-  <div *ngFor="let entity of entityList; let i = index">
+  <div *ngFor="let entiti of entityList; let i = index">
       <!-- <h3 padding class="bold">Program - {{program.name}} ({{program.externalId}})</h3> -->
 
   <ion-card>
 
-    <ion-item-group *ngFor="let solution of entity?.solutions; let j = index" >
+    <ion-item-group *ngFor="let solution of entiti?.solutions; let j = index" >
       <ion-item-divider color="light">
         <!-- <h4 > {{assessment.name}}</h4> -->
-      <h4  class="bold"  text-wrap> {{entity.name}} </h4>
+      <h4  class="bold"  text-wrap> {{entiti.name}} </h4>
 
       </ion-item-divider>
       <ion-item *ngFor="let entity of solution.entities; let k = index" text-wrap>
         <!-- <h3>{{assessment.type}} </h3> -->
         <div class="_flex-box" >
           <div style="flex:1" 
-            (click)="entity?.downloaded ? goToEcm(entity?.submissionId,entity?.name ) : getAssessmentDetails(i, j,k) ">
+            (click)="entity?.downloaded ? goToEcm(entity?.submissionId,entiti?.name,entiti?._id,entity?.name,entity?._id) : getAssessmentDetails(i, j,k) ">
             {{entity.name}}  
           </div>
           <ion-icon name="cloud-download" class="downloadIcon" (click)="getAssessmentDetails(i, j, k)"
@@ -42,7 +42,7 @@
   </ion-card>
 </div>
 
-  <div class="_flex-box msgContainer" *ngIf="!entityList?.length">No {{entityType}}</div>
+  <div class="_flex-box msgContainer" *ngIf="!entityList?.length">{{'message.no' | translate}} {{entityType}}</div>
 <!-- </ion-content> -->
 
 

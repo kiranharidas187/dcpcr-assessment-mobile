@@ -5,6 +5,7 @@ import { ApiProvider } from '../api/api';
 import { UtilsProvider } from '../utils/utils';
 import { AppConfigs } from '../appConfig';
 import { Storage } from '@ionic/storage';
+import { TranslateService } from '@ngx-translate/core';
 
 /*
   Generated class for the RatingProvider provider.
@@ -19,6 +20,7 @@ export class RatingProvider {
     private apiService: ApiProvider,
     private utils: UtilsProvider,
     private storage: Storage,
+    private translate : TranslateService,
     private appCtrl: App) {
     console.log('Hello RatingProvider Provider');
   }
@@ -46,10 +48,14 @@ export class RatingProvider {
           this.storage.set('rating_' + submissionId, success.result);
           this.appCtrl.getRootNav().push('RatingCriteriaListingPage', { 'submissionId': submissionId, 'schoolData': schoolData });
         } else {
-          this.utils.openToast(success.message, 'Ok');
+          this.translate.get( 'toastMessage.ok').subscribe(translations =>{
+            this.utils.openToast(success.message,translations);
+          })
         }
       }, error => {
-        this.utils.openToast("Something went wrong");
+        this.translate.get('toastMessage.somThingWentWrong').subscribe(translations =>{
+          this.utils.openToast(translations);
+        })
         this.utils.stopLoader();
       })
   }
@@ -63,14 +69,20 @@ export class RatingProvider {
         if (Object.keys(success.result).length && success.isEditable) {
           this.appCtrl.getRootNav().push('RatedCriteriaListPage', { "submissionId": submissionId, 'schoolData': schoolData, 'data':success.result })
         } else if(!success.isEditable) {
-          this.utils.openToast('You dont have permission to view this page.', 'Ok');          
+          this.translate.get(['toastMessage.noPermissionToPage', 'toastMessage.ok']).subscribe(translations =>{
+            this.utils.openToast(translations.noPermissionToPage,translations.ok);
+          })
         } else {
-          this.utils.openToast(success.message, 'Ok');
+          this.translate.get( 'toastMessage.ok').subscribe(translations =>{
+            this.utils.openToast(success.message,translations);
+          })
         }
         this.utils.stopLoader();
       }, error => {
         this.utils.stopLoader();
-        this.utils.openToast("Something went wrong");
+        this.translate.get('toastMessage.somThingWentWrong').subscribe(translations =>{
+          this.utils.openToast(translations);
+        })
       })
   }
 

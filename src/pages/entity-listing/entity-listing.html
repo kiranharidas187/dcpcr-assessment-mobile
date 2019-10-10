@@ -16,9 +16,11 @@
   [entityList]="entityList"  
   (refreshEvent)="refresh($event)"
   [entityType]="'assessments'" 
+  [programIndex]="programIndex"
   (getAssessmentDetailsEvent)="getAssessmentDetails($event)"
   [showMenu]="true"
   (openMenuEvent)="openMenu($event)"
   >
   </entity-listing>
+
 </ion-content>

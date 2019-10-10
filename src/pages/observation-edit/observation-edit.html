@@ -1,0 +1,21 @@
+<ion-header>
+  <header [title]="'headings.observationUpdate'|translate" [hideBack]="false">
+  </header>
+</ion-header>
+
+
+<ion-content padding>
+  <dynamic-form [formFields]="formFields" [form]="formGroup" *ngIf="formGroup"></dynamic-form>
+</ion-content>
+
+<ion-footer no-shadow>
+  <ion-toolbar class="_toolbar-background-md" position="bottom">
+    <ion-row>
+      <ion-col>
+        <button ion-button full class="btnText" (click)="updateObservation()">
+          {{ 'buttons.observation' | translate}} {{ 'buttons.update' | translate}}
+        </button>
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

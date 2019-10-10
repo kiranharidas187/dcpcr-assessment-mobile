@@ -11,6 +11,7 @@ import { SubmissionListPage } from '../submission-list/submission-list';
 import { ObservationServiceProvider } from '../../providers/observation-service/observation-service';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 import { DownloadAndPreviewProvider } from '../../providers/download-and-preview/download-and-preview';
+import { ObservationReportsPage } from '../observation-reports/observation-reports';
 
 declare var cordova: any;
 
@@ -48,7 +49,8 @@ export class ObservationDetailsPage {
     this.events.subscribe('observationLocalstorageUpdated', success => {
       this.getLocalStorageData();
     })
-    this.events.subscribe('refreshObservationList', type => {
+
+    this.events.subscribe('refreshObservationListOnAddEntity', type => {
     this.refresh();
       console.log("refresh obs list")
     })
@@ -74,14 +76,24 @@ export class ObservationDetailsPage {
   }
 
   refresh(type = 'normal') {
+    console.log("refresh called")
+    this.utils.startLoader();
+
     const url = AppConfigs.cro.observationList;
     this.observationProvider.refreshObservationList(this.observationList).then(observationList =>{
       this.programs = observationList;
       this.observationList = observationList;
       this.observationDetails[0]= (observationList[this.selectedObservationIndex]);
       this.enableCompleteBtn = this.isAllEntitysCompleted();    
-        console.log(JSON.stringify(observationList))
-    }).catch();
+        // console.log(JSON.stringify(observationList))
+      this.utils.stopLoader();
+
+    }).catch(
+      error =>{
+      this.utils.stopLoader();
+
+      }
+    );
 
     // const url = AppConfigs.survey.fetchIndividualAssessments + "?type=assessment&subType=individual&status=active";
     // event ? "" : this.utils.startLoader();
@@ -188,6 +200,7 @@ export class ObservationDetailsPage {
       this.programs = data;
       this.observationList = data;
       this.observationDetails.push(data[this.selectedObservationIndex]);
+      console.log(JSON.stringify(this.observationDetails))
       this.enableCompleteBtn = this.isAllEntitysCompleted();
       this.firstVisit = false;
     }).catch(error => {
@@ -219,7 +232,7 @@ export class ObservationDetailsPage {
         translateObject['actionSheet.restrictAction'],
       buttons: [
         {
-          text: 'No',
+          text: translateObject['actionSheet.no'],
           role: 'cancel',
           handler: () => {
           }
@@ -245,6 +258,12 @@ export class ObservationDetailsPage {
     alert.present();
   }
 
+  viewObservationReports() {
+    const payload = {
+      observationId: this.observationDetails[0]._id
+    }
+    this.navCtrl.push(ObservationReportsPage, payload);
+  }
 
   // getAssessmentDetails(event) {
   //   // console.log("getting assessment details")

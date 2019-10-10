@@ -3,9 +3,12 @@
         "date":"Date",
         "generalQuestions":"General Questions",
         "selectObservationType":"Select a observation Type",
-        "selectSolution" : "Select a Solution"
+        "selectSolution" : "Select a Solution",
+        "selectSchool":"Select Schools"
     },
     "actionSheet":{
+        "confirmLeave":"Are you sure to leave.",
+        "saveCurrentDataConfirmation":"Old details will be lost ? Are you sure to overwrite the details",
         "edit":"Edit",
         "delete":"Delete",
         "confirm":"Confirm",
@@ -53,10 +56,15 @@
         "deleteObservation":"Are you sure you want to delete the observation?",
         "networkSlowAlert" : "You are connected to a slower data network. Image upload may take longer time. Do you want to continue?"
     },
+    
     "buttons": {
         "observeAgain":"Observe Again",
         "view": "View",
+        "and":"and",
+        "addNew":"Add New",
+        "viewReport":"View Report",
         "draft":"Draft",
+        "publish":"Publish",
         "goToEntities":"Go TO Entitites",
         "active":"Active",
         "completed":"Completed",
@@ -64,6 +72,8 @@
         "ratings": "Rate",
         "start": "Start",
         "survey": "survey",
+        "delete":"Delete",
+        "done":"Done",
         "previous":"Previous",
         "today":"Today",
         "about":"About",
@@ -72,9 +82,10 @@
         "next": "Next",
         "back": "Back",
         "upload": "Upload",
-        "and": "and",
+        "skip":"Skip",
         "submit": "Submit",
         "cancel": "Cancel",
+        "addEntity":"Add Entity",
         "send": "Send",
         "yes": "Yes",
         "no": "No",
@@ -93,7 +104,11 @@
         "saveDraft":"Draft",
         "markAsComplete":"Mark as completed",
         "preview":"Preview",
-        "addEntity":"Add Entity"
+        "viewReports":"View Reports",
+        "viewObservationReport":"View Observation report",
+        "viewEntityReport":"View Entity Report",
+        "edit":"Edit",
+        "observation":"Observation"
     },
     "tabs": {
         "home": "Home",
@@ -108,9 +123,20 @@
         "observations":"Observations",
         "myObservation":"My Observation",
         "draftObservation":"Draft Observation",
-        "addObservation":"Add Observation"
+        "addObservation":"Add Observation",
+        "userRolePage":"Roles",
+        "dashboard":"Dashboard"
     },
     "headings": {
+        "zone":"Zones",
+        "state":"State",
+        "lastModified":"Last Modefied at",
+        "district":"District",
+        "entities":"Entities",
+        "userRolePage":"Roles",
+        "dashboard":"Dashboard",
+        "cluster":"Cluster",
+        "myActiveAssessment":"My active asssessments",
         "submissionListPage":"Submission List",
         "addObservation":"Add Observation",
         "solutionDetails":"Solution Details",
@@ -119,6 +145,7 @@
         "myInstitutions":"My Institutions",
         "mySchool": "My Schools",
         "faqs": "FAQs",
+        "programList":"Program List",
         "about": "About",
         "school": "School",
         "profile": "Profile",
@@ -152,7 +179,9 @@
         "individualAssessments": "Individual Assessments",
         "observationDetails": "Observation Details",
         "hint":"Hint",
-        "submissionPreview":"Submission Preview"
+        "submissionPreview":"Submission Preview",
+        "observationReports":"Report",
+        "observationUpdate":"Observation Update"
     },
     "labels": {
         "welcome": "Welcome",
@@ -181,11 +210,15 @@
         "gujarati": "ગુજરાતી"
     },
     "message":{
+        "noReportsFound":"No reports found",
         "noSubmission":"No Submissions",
+        "startSearchSchool":"search school",
+        "noSchoolFound":"No Schools Found",
         "searchEntities":"Search for entities",
         "startSearchSolution":"Search for solutions",
         "dontCloseApp":"Please don't close the app or go back.",
         "of":"of",
+        "noProgram":"No Program",
         "program":"Program",
         "images":"Images",
         "startSearchEntity":"Start typing entity name",
@@ -196,7 +229,8 @@
         "noDraft":"No Drafts",
         "noEntity":"No Entity"  ,
         "no":"No",
-        "noSolutionFound":"No Solutions"
+        "noSolutionFound":"No Solutions",
+        "noProgramsFound":"No Programs found."
         },
     "toastMessage":{
         "selectSolution":"Select a Solution",
@@ -204,6 +238,7 @@
         "networkDisconnected" : "NetWork Disconnected",
         "networkConnected":"Network Connected",
         "ok":"OK",
+        "allValueAreMandatory":"Fill Mandatory Field",
         "enableInternet":"Please enable your internet connection to continue.",
         "connectToInternet":"Please connect to internet ",
         "networkConnectionForAction":"You need network connection for this action.",

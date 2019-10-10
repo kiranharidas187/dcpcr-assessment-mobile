@@ -6,6 +6,7 @@ import { Storage } from '@ionic/storage';
 import { AppConfigs } from '../../providers/appConfig';
 import { NetworkGpsProvider } from '../../providers/network-gps/network-gps';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class EntityProfileEditPage {
     private utils: UtilsProvider,
     private storage: Storage,
     private app: App,
+    private translate:TranslateService,
     private ngps: NetworkGpsProvider,
     private events: Events,
     private localStorage: LocalStorageProvider) {
@@ -78,7 +80,9 @@ export class EntityProfileEditPage {
         this.utils.stopLoader();
       })
     } else {
-      this.utils.openToast("Please connect to network.")
+      this.translate.get('toastMessage.connectToInternet').subscribe(translations =>{
+        this.utils.openToast(translations);
+      })
     }
   }
 

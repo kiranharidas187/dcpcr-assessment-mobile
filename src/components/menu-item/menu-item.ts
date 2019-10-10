@@ -6,6 +6,7 @@ import { NetworkGpsProvider } from '../../providers/network-gps/network-gps';
 import { RegistryFormPage } from '../../pages/registry-form/registry-form';
 import { UpdateLocalSchoolDataProvider } from '../../providers/update-local-school-data/update-local-school-data';
 import { FeedbackPage } from '../../pages/feedback/feedback';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'menu-item',
@@ -31,7 +32,7 @@ export class MenuItemComponent {
 
   constructor(private navParams: NavParams, private ratingService: RatingProvider,
     private appCtrl: App, private viewCtrl: ViewController, private utils: UtilsProvider,
-    private events: Events, private ngps: NetworkGpsProvider, private modalCntrl: ModalController,
+    private events: Events, private ngps: NetworkGpsProvider, private modalCntrl: ModalController,    private translate : TranslateService,
     private usld: UpdateLocalSchoolDataProvider) {
     //console.log('Hello MenuItemComponent Component');
     this.showMenuArray =  this.navParams.get('showMenuArray');
@@ -52,14 +53,22 @@ export class MenuItemComponent {
 
     this.programId = this.navParams.get("programId")
     this.subscription = this.events.subscribe('network:offline', () => {
-      this.utils.openToast("Network disconnected");
-      this.networkAvailable = false;
+      let message;
+      this.translate.get('toastMessage.networkDisconnected').subscribe(translations => {
+        //  console.log(JSON.stringify(translations))
+        message = translations;
+       })
+      this.utils.openToast(message);
     });
 
     // Online event
     const onine = this.events.subscribe('network:online', () => {
-      this.utils.openToast("Network connected");
-      this.networkAvailable = true;
+      let message;
+      this.translate.get('toastMessage.networkConnected').subscribe(translations => {
+        //  console.log(JSON.stringify(translations))
+        message = translations;
+       })
+      this.utils.openToast(message);
     });
 
     this.networkAvailable = this.ngps.getNetworkStatus();
@@ -72,7 +81,13 @@ export class MenuItemComponent {
     }
     // const submissionId = this.schoolDetails[school._id]['assessments'][0].submissionId;
     if (!this.networkAvailable) {
-      this.utils.openToast("Please enable your internet connection to continue.", "Ok");
+      let message , okMessage;
+      this.translate.get(['toastMessage.enableInternet' , 'toastMessage.ok']).subscribe(translations => {
+        //  console.log(JSON.stringify(translations))
+        message = translations.enableInternet;
+        okMessage = translations.ok
+       })
+      this.utils.openToast(message , okMessage);
     } else {
       this.ratingService.fetchRatedQuestions(this.submissionId, school);
     }
@@ -85,7 +100,13 @@ export class MenuItemComponent {
       name: this.schoolName
     }
     if (!this.networkAvailable) {
-      this.utils.openToast("Please enable your internet connection to continue.", "Ok");
+      let message , okMessage;
+      this.translate.get(['toastMessage.enableInternet' , 'toastMessage.ok']).subscribe(translations => {
+        //  console.log(JSON.stringify(translations))
+        message = translations.enableInternet;
+        okMessage = translations.ok
+       })
+      this.utils.openToast(message , okMessage);
     } else {
       this.ratingService.checkForRatingDetails(this.submissionId, school);
     }

@@ -76,11 +76,21 @@ export class ImageListingPage {
     let imageArray = [];
     for (const sections of this.currentEvidence.sections) {
       for (const question of sections.questions) {
-        let questImage = this.utils.getImageNamesForQuestion(question);
-
+        let questImage 
+        if(question.responseType === 'pageQuestions' ){
+           question.pageQuestions.forEach(element => {
+           questImage = this.utils.getImageNamesForQuestion(element);
+           const newArray = questImage.length ? imageArray.concat(questImage) : imageArray;
+           imageArray = newArray;
+             
+           });
+        }else {
+          questImage = this.utils.getImageNamesForQuestion(question);
+          const newArray = questImage.length ? imageArray.concat(questImage) : imageArray;
+          imageArray = newArray;
         // imageArray = questImage.length ? [...imageArray, ...questImage] : imageArray;
-        const newArray = questImage.length ? imageArray.concat(questImage) : imageArray;
-        imageArray = newArray;
+        }
+       
       }
     }
     console.log(JSON.stringify(imageArray));
@@ -253,6 +263,7 @@ export class ImageListingPage {
     this.utils.startLoader('Please wait while submitting')
     console.log("submitting");
     const payload = this.constructPayload();
+    console.log(JSON.stringify(payload));
     const submissionId = this.submissionId;
     const url = (this.schoolData.observation ? AppConfigs.cro.makeSubmission : AppConfigs.survey.submission) + submissionId + '/';
     this.apiService.httpPost(url, payload, response => {
@@ -274,7 +285,6 @@ export class ImageListingPage {
     }, error => {
       this.utils.stopLoader();
     })
-
   }
 
   constructPayload(): any {
@@ -294,68 +304,98 @@ export class ImageListingPage {
     evidence.externalId = currentEvidence.externalId;
     evidence.startTime = currentEvidence.startTime;
     evidence.endTime = Date.now();
+    this.evidenceSections = this.pullOutPageQuestion(); 
     for (const section of this.evidenceSections) {
       for (const question of section.questions) {
-        let obj = {
-          qid: question._id,
-          value: question.responseType === 'matrix' ? this.constructMatrixObject(question) : question.value,
-          remarks: question.remarks,
-          fileName: [],
-          payload: {
-            question: question.question,
-            labels: [],
-            responseType: question.responseType,
-            filesNotUploaded: []
-          },
-          startTime: question.startTime,
-          endTime: question.endTime
-        };
-
-        if (question.fileName && question.fileName.length) {
-          const filePaylaod = []
-          for (const fileName of question.fileName) {
-            for (const updatedFileDetails of this.imageList) {
-              if (fileName === updatedFileDetails.file) {
-                const obj = {
-                  name: fileName,
-                  sourcePath: updatedFileDetails.sourcePath
+          let obj = {
+            qid: question._id,
+            value: question.responseType === 'matrix' ? this.constructMatrixObject(question) : question.value,
+            remarks: question.remarks,
+            fileName: [],
+            payload: {
+              question: question.question,
+              labels: [],
+              responseType: question.responseType,
+              filesNotUploaded: []
+            },
+            startTime: question.startTime,
+            endTime: question.endTime
+          };
+  
+          if (question.fileName && question.fileName.length) {
+            const filePaylaod = []
+            for (const fileName of question.fileName) {
+              for (const updatedFileDetails of this.imageList) {
+                if (fileName === updatedFileDetails.file) {
+                  const obj = {
+                    name: fileName,
+                    sourcePath: updatedFileDetails.sourcePath
+                  }
+                  filePaylaod.push(obj);
                 }
-                filePaylaod.push(obj);
               }
             }
+            obj.fileName = filePaylaod;
           }
-          obj.fileName = filePaylaod;
-        }
-
-        if (question.responseType === 'multiselect') {
-          for (const val of question.value) {
+  
+          if (question.responseType === 'multiselect') {
+            for (const val of question.value) {
+              for (const option of question.options) {
+                if (val === option.value && obj.payload.labels.indexOf(option.label) <= 0) {
+                  obj.payload.labels.push(option.label);
+                }
+              }
+            }
+  
+          } else if (question.responseType === 'radio') {
+  
             for (const option of question.options) {
-              if (val === option.value && obj.payload.labels.indexOf(option.label) <= 0) {
+              if (obj.value === option.value && obj.payload.labels.indexOf(option.label) <= 0) {
                 obj.payload.labels.push(option.label);
               }
             }
+  
+          } else {
+            obj.payload.labels.push(question.value);
           }
-
-        } else if (question.responseType === 'radio') {
-
-          for (const option of question.options) {
-            if (obj.value === option.value && obj.payload.labels.indexOf(option.label) <= 0) {
-              obj.payload.labels.push(option.label);
-            }
+          for (const key of Object.keys(question.payload)) {
+            obj[key] = question.payload[key];
           }
-
-        } else {
-          obj.payload.labels.push(question.value);
+          evidence.answers[obj.qid] = obj;
+          console.log("i m here")
         }
-        for (const key of Object.keys(question.payload)) {
-          obj[key] = question.payload[key];
-        }
-        evidence.answers[obj.qid] = obj;
+       
       }
-    }
+    
     payload.evidence = evidence;
     return payload
   }
+
+  pullOutPageQuestion(){
+    console.log("Pull Out page Questions");
+    console.log(JSON.stringify(this.evidenceSections))
+    let sections = this.evidenceSections ;
+      sections.forEach((section,sectionIndex) => {
+    let questionsArray = [];
+        section.questions.forEach((question) => {
+        if(question.responseType === 'pageQuestions'){
+            // question.pageQuestions.forEach(pageQuestion => {
+            //   questionsArray.push(pageQuestion)
+            //   console.log("pageQuestion")
+            // });
+            questionsArray = [ ...questionsArray , ...question.pageQuestions]
+        }else{
+          questionsArray.push(question)
+        }
+      });
+      this.evidenceSections[sectionIndex].questions = questionsArray
+    });
+    
+    console.log("After Pull Out page Questions");
+    console.log(JSON.stringify(this.evidenceSections))
+    return this.evidenceSections;
+  }
+
 
   constructMatrixObject(question) {
     const value = [];

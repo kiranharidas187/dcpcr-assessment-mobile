@@ -81,7 +81,12 @@ export class UpdateLocalSchoolDataProvider {
         for (const section of evidence.sections) {
           for (const question of section.questions) {
             // // console.logg(question._id)
-            if (validSubmission.answers && validSubmission.answers[question._id]) {
+            if( question.responseType === 'pageQuestions'){
+              for(const questions of question.pageQuestions){
+                questions.value = questions.responseType !== 'matrix' ? validSubmission.answers[questions._id].value : this.constructMatrixValue(validSubmission, questions, evidence.externalId);
+                questions.remarks = validSubmission.answers[questions._id].remarks;
+              }
+            }else if (validSubmission.answers && validSubmission.answers[question._id]) {
               question.value = question.responseType !== 'matrix' ? validSubmission.answers[question._id].value : this.constructMatrixValue(validSubmission, question, evidence.externalId);
               question.remarks = validSubmission.answers[question._id].remarks;
             }

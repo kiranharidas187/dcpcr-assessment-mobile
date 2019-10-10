@@ -50,6 +50,15 @@ export class AddObservationFormPage {
   solutionLimit: number = 100;
   solutionPage: number = 1;
   totalCount: number = 0;
+  ObservationFromTitle: any;
+  ObservationFromDescription: any;
+  entityList: any;
+  entityListPage = 1;
+  entityListLimit = 50;
+  entityListTotalCount: any;
+  searchEntity: string = "";
+  entityCount: any;
+  isPublished: boolean = false;
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
@@ -70,22 +79,33 @@ export class AddObservationFormPage {
   ) {
     this.editData = this.navParams.get('data');
     this.editDataIndex = this.navParams.get('index');
-
-
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad AddObservationPage');
-    this.utils.startLoader();
-    this.apiProviders.httpGet(AppConfigs.cro.getEntityListType, success => {
-      this.entityTypeData = success.result;
-      if (this.editData) {
-        this.entityType = this.editData.data.entityId;
-      }
-      this.utils.stopLoader();
-    }, error => {
-      this.utils.stopLoader();
-    });
+    this.getSolutionList()
+
+    // this.utils.startLoader();
+    // this.apiProviders.httpGet(AppConfigs.cro.getEntityListType, success => {
+    //   this.entityTypeData = success.result;
+    //   console.log(JSON.stringify(this.entityTypeData))
+
+    //   if (this.editData) {
+    //     this.entityType = this.editData.data.entityId;
+    //   }
+    //   else{
+    //     this.entityTypeData.forEach((element,index) => {
+    //       if(element.name ==="schoolLeader"){
+    //     this.entityType = element._id;
+    //       }
+    //     });
+    //   }
+    //   console.log(JSON.stringify(this.entityTypeData))
+      // this.getSolutionList()
+    //   this.utils.stopLoader();
+    // }, error => {
+    //   this.utils.stopLoader();
+    // });
   }
 
   selectChange(e) {
@@ -118,8 +138,10 @@ export class AddObservationFormPage {
                       });
                     }).catch(
                       error => {
-                        this.utils.openToast("Location should be turned on for this action");
-                        this.utils.stopLoader();
+                        this.translate.get('toastMessage.locationForAction').subscribe(translations =>{
+                          this.utils.openToast( translations);
+                        })
+                                                this.utils.stopLoader();
                       }
                     );
                 } else {
@@ -158,8 +180,9 @@ export class AddObservationFormPage {
                   });
                 }).catch(
                   error => {
-                    this.utils.openToast("Location should be turned on for this action");
-                  }
+                    this.translate.get('toastMessage.locationForAction').subscribe(translations =>{
+                      this.utils.openToast( translations);
+                    })                  }
                 );
             } else {
               this.geolocation.getCurrentPosition(options).then((resp) => {
@@ -185,7 +208,15 @@ export class AddObservationFormPage {
   }
 
   selectSolution(frameWork) {
-    this.selectedFrameWork = frameWork;
+    console.log("solution select")
+    this.selectedFrameWork = frameWork._id;
+    this.ObservationFromTitle = frameWork.name;
+    this.ObservationFromDescription = frameWork.description
+    if( this.editData && (this.editData.data.solutionId !== frameWork._id || this.selectedFrameWork == this.editData.data.solutionId)){
+      this.editData.data.name = frameWork.name;
+      this.editData.data.description = frameWork.description;
+      console.log("changed sol")
+    }
   }
 
   showDetails(frameWork) {
@@ -197,8 +228,9 @@ export class AddObservationFormPage {
     let solutionFlag = false;
     event ? this.solutionPage ++ : this.solutionPage ;
     this.utils.startLoader();
-    this.apiProviders.httpGet(AppConfigs.cro.getSolutionAccordingToType + this.entityType + "?search="+this.searchSolutionUrl+"&limit="+this.solutionLimit+"&page="+this.solutionPage, success => {
-      // console.log(JSON.stringify(success.result))
+    // this.apiProviders.httpGet(AppConfigs.cro.getSolutionAccordingToType + this.entityType + "?search="+this.searchSolutionUrl+"&limit="+this.solutionLimit+"&page="+this.solutionPage, success => {
+    this.apiProviders.httpGet(AppConfigs.cro.getSolutionAccordingToType + "?search="+this.searchSolutionUrl+"&limit="+this.solutionLimit+"&page="+this.solutionPage, success => {
+    // console.log(JSON.stringify(success.result))
       // this.listOfSolution = event ? [...this.listOfSolution ,...success.result] :[...success.result];
       // // this.totalCount = success.result[0].count;
       // console.log(JSON.stringify(this.listOfSolution))
@@ -216,6 +248,8 @@ export class AddObservationFormPage {
         this.listOfSolution.forEach(element => {
           if (element._id === this.editData.data.solutionId)
             this.selectedFrameWork = element._id;
+            this.ObservationFromTitle = element.name;
+            this.ObservationFromDescription = element.description;
         });
       }
       solutionFlag = true;
@@ -230,11 +264,29 @@ export class AddObservationFormPage {
     this.utils.startLoader();
     this.apiProviders.httpGet(AppConfigs.cro.getCreateObservationMeta + this.selectedFrameWork, success => {
       this.addObservationData = success.result;
-      if (this.editData) {
-        this.addObservationData.forEach(element => {
+      console.log(JSON.stringify(this.addObservationData))
+      if (this.editData) { 
+        if((! this.editData.data.name ||! this.editData.data.description)  && this.editData.data.solutionId){
+          this.addObservationData.forEach(element => {
+          if (element.field == 'name') 
+            element.value = this.ObservationFromTitle;
+          if (element.field == 'description')
+            element.value = this.ObservationFromDescription;
+        });
+        }else{
+          this.addObservationData.forEach(element => {
           element.value = this.editData.data[element.field];
           if (element.field === 'status') {
             element.value = 'draft';
+          }
+        });
+        }
+      }else{
+        this.addObservationData.forEach(element => {
+          switch(element.field){
+            case "name" : element.value = this.ObservationFromTitle;
+                          break;
+            case "description" : element.value = this.ObservationFromDescription;
           }
         });
 
@@ -250,13 +302,20 @@ export class AddObservationFormPage {
   doAction() {
     let actionFlag = false;
     switch (this.selectedIndex) {
+      // case 0:
+      //   actionFlag = this.entityType ? this.getSolutionList() : false;
+      //   break;
+      // case 1:
+      //   actionFlag = this.selectedFrameWork ? this.getObservationMetaForm() : false;
+      //   break;
       case 0:
-        actionFlag = this.entityType ? this.getSolutionList() : false;
-        break;
+        actionFlag = this.selectedFrameWork ? this.getObservationMetaForm() : false;        break;
       case 1:
-        actionFlag = this.selectedFrameWork ? this.getObservationMetaForm() : false;
-        break;
+         actionFlag = this.addObservationForm.valid ? this.getEntityList() : false;
+        // actionFlag = true;
+        
 
+        break;
     }
     // this.selectedIndex === 0 ? 
     // actionFlag ? null :  this.utils.openToast("select the type of observation") 
@@ -265,10 +324,40 @@ export class AddObservationFormPage {
 
     return actionFlag;
   }
-  doInfinite(infiniteScroll) {
+  getEntityList(event ?) {
+    event ? this.entityListPage ++ : this.entityListPage ;
+
+    this.apiProviders.httpGet(AppConfigs.cro.searchEntity+'?solutionId='+this.selectedFrameWork+"&search="+this.searchEntity+"&page="+this.entityListPage+"&limit="+this.entityListLimit,success =>{
+      this.entityListTotalCount = success.result[0].count;
+      if(this.editData && this.editData.data.entities.length == 0 ){
+          success.result[0].data.forEach(element => {
+            element["selected"]= false;
+          });
+        }else if(this.editData && this.editData.data.entities.length == 0 ) {
+          success.result[0].data.forEach(element => {
+            
+            element["selected"] = this.editData.data.entities.includes(element._id) > -1 ? true : false;
+          });
+        }else{
+          success.result[0].data.forEach(element => {
+            element["selected"]= true;
+          });
+        }
+    this.entityList = success.result[0].data;
+    this.entityCount = 0;
+    this.entityList.forEach(element => {
+      element.selected ? this.entityCount++ : this.entityCount
+    });
+    console.log(JSON.stringify(success))
+    },error =>{
+
+    },{version:"v2" , dhiti : false});
+    return true;
+  }
+  doInfinite(infiniteScroll,type = 'solutions') {
     console.log("doInfinite function called");
     setTimeout(() => {
-      this.getSolutionList('infiniteScroll')
+      type == 'solutions' ? this.getSolutionList('infiniteScroll') : this.getEntityList('infiniteScroll')
       infiniteScroll.complete();
     }, 500);
   }
@@ -294,20 +383,52 @@ export class AddObservationFormPage {
     this.searchSolutionUrl ="";
     this.getSolutionList();
   }
+
+  searchEntities(event){
+    if(!event.value){
+      // this.listOfSolution = [];
+      this.clearSolution();
+      return
+    }
+    if(!event.value || event.value.length < 3){
+        return;
+    }
+    this.searchEntity = event.value;
+    this.getEntityList();
+     
+    // console.log("search entity called")
+    // console.log(event.value);
+    // this.searchUrl.emit(event.value)
+    // this.filterSelected();
+  }
+  clearEntity(){
+    // this.listOfSolution = []
+    this.searchEntity ="";
+    this.getEntityList();
+  }
   tmpFunc() { 
-     this.selectedIndex === 0 ? this.utils.openToast("Select the type of observation") 
-    : 
-     this.utils.openToast("Select a solution") ;
+    let message ; 
+     this.selectedIndex === 0 ? this.translate.get('toastMessage.selectSolution').subscribe(translations => {
+      //  console.log(JSON.stringify(translations))
+      message = translations;
+     })
+
+    : this.translate.get('toastMessage.allValueAreMandatory').subscribe(translations => {
+      
+      message = translations;
+     });
+     this.utils.openToast(message) ;
 
   }
 
   saveDraft(option = 'normal') {
-    if (this.entityType) {
+    if (this.selectedFrameWork) {
       let obsData: {} = {
         data: {}
       };
+      // obsData['data']['entities'] = [];
       obsData['data'] = this.creatPayLoad('draft');
-      obsData['data']['isComplete'] = this.addObservationForm ? this.addObservationForm.valid ? true : false : false;
+      obsData['data']['isComplete'] = this.addObservationForm && obsData['data']['entities'].length > 0 ?(this.addObservationForm && this.addObservationForm.valid)? true : false : false;
       this.localStorage.getLocalStorage('draftObservation').then(draftObs => {
         let draft = draftObs;
         this.editDataIndex >= 0 ? draft[this.editDataIndex] = obsData : draft.push(obsData);
@@ -326,24 +447,82 @@ export class AddObservationFormPage {
 
   creatPayLoad(type = 'publish') {
     let payLoad = this.addObservationForm ? this.addObservationForm.getRawValue() : {};
+    payLoad['entities'] = ( this.addObservationForm && this.addObservationForm.valid )?   this.getSelectedEntities() : [];
     if (type === 'draft') {
       payLoad['isComplete'] = false;
       payLoad['solutionId'] = this.selectedFrameWork ? this.selectedFrameWork : null;
-      payLoad['entityId'] = this.entityType ? this.entityType : null;
+      // payLoad['entityId'] = this.entityType ? this.entityType : null;
     }
     return payLoad;
+  }
+  getSelectedEntities(): any {
+    let entityIdList = []
+    if(this.entityList){
+    this.entityList.forEach(entity => {
+      entity.selected ? entityIdList.push(entity._id) : null;
+    });
+  }
+
+    return entityIdList;
   }
 
 
   ionViewWillUnload() {
-    if(this.saveDraftType === 'force' && this.entityType ){
-      this.saveDraft('force')
-    }
+    if (this.saveDraftType !== 'normal' && !this.isPublished)
+        this.editData ?  null : this.saveDraft('force');
+  }
 
+  publishObservation(){
+   let obj = {
+      data :{}
+    }
+    let observation = {
+      data:{}
+    }
+    observation['data'] = this.creatPayLoad('draft');
+    obj['data']['status'] = 'published';
+    obj['data']['startDate'] = observation.data['startDate'];
+    obj['data']['endDate'] = observation.data['endDate'];
+    obj['data']['name'] = observation.data['name'];
+    obj['data']['description'] = observation.data['description'];
+    obj['data']['entities'] = observation.data['entities'];
+
+    console.log(JSON.stringify(obj));
+    this.apiProviders.httpPost(AppConfigs.cro.createObservation + observation.data['solutionId'], obj, success => {
+      console.log(JSON.stringify(success));
+      // console.log("published obs")
+        this.utils.openToast(success.message);
+        this.isPublished = true;
+        console.log(this.editDataIndex)
+        if(this.editData){
+          this.localStorage.getLocalStorage('draftObservation').then(draftObs=>{
+            draftObs.splice(this.editDataIndex, 1);
+            console.log(JSON.stringify(draftObs))
+            console.log("DRAFTOBS")
+            this.localStorage.setLocalStorage('draftObservation', draftObs);
+          }).catch( error=>{
+
+          })
+        }
+        this.navCtrl.pop();
+
+     
+    }, error => {
+
+    })
+  }
+
+  countEntity(entity){
+    entity.selected ? this.entityCount-- : this.entityCount++ ;
+    console.log(this.entityCount)
   }
 
   async ionViewCanLeave() {
-    if(this.saveDraftType !== 'normal' && this.entityType && this.editDataIndex){
+    console.log(this.saveDraftType + "  " + this.editDataIndex)
+    if(this.isPublished){
+      return true
+    }
+    if(this.saveDraftType != 'normal'  && this.editDataIndex >= -1 ){
       const shouldLeave = await this.confirmLeave();
       return shouldLeave;
     }

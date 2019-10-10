@@ -32,7 +32,7 @@ export class EntityListingPage {
   ionViewDidLoad() {
     console.log('ionViewDidLoad EntityListingPage');
   }
-
+ 
     getAssessmentDetails(event) {
       event.programIndex = this.programIndex;
        this.assessmentService.getAssessmentDetails(event, this.programList, this.assessmentType).then(program => {

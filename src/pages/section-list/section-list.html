@@ -14,17 +14,19 @@
 
   <ion-item-group>
     <ion-item-divider color="light">
-          <h3 class="headerText">
-              <ion-icon name="book" margin-right></ion-icon>
-              <span class="_wrap-text">{{entityName}}</span> 
-            </h3>
+      <h3 class="headerText">
+        <ion-icon name="book" margin-right></ion-icon>
+        <span class="_wrap-text">{{entityName}}</span>
+      </h3>
     </ion-item-divider>
     <ng-container *ngFor="let section of evidenceSections; let i= index">
-      <ion-item  (click)="goToQuestioner(i)" *ngIf="section?.questions?.length">
+    
+      <ion-item (click)="goToQuestioner(i)" *ngIf="section?.questions?.length">
         <h3>
           <ion-icon name="list-box" margin-right></ion-icon> {{ section?.name }}
           <span float-right *ngIf="section.progressStatus === 'completed'" class="_completed _flex-box">
-            {{'labels.completed'|translate}} <ion-icon name="checkmark-circle" class="_progressIcon" margin-left></ion-icon>
+            {{'labels.completed'|translate}} <ion-icon name="checkmark-circle" class="_progressIcon" margin-left>
+            </ion-icon>
           </span>
           <span float-right *ngIf="!section.progressStatus && !isIos" class=" _flex-box">
             <ion-icon name="arrow-forward" class="_progressIcon" margin-left></ion-icon>
@@ -37,7 +39,6 @@
           </span>
         </h3>
       </ion-item>
- 
 
     </ng-container>
   </ion-item-group>
@@ -54,26 +55,37 @@
   <div margin class="border-radius" *ngIf="currentEvidence?.description">
     <h2 padding-left>{{'headings.description' | translate}}</h2>
     <div padding-left padding-right padding-bottom>
-        {{currentEvidence?.description}}
+      {{currentEvidence?.description}}
     </div>
   </div>
 </ion-content>
 
-<ion-footer no-shadow  *ngIf="((allAnsweredForEvidence && !currentEvidence.isSubmitted) || currentEvidence?.enableSubmit) && !sectionData?.observation">
+<ion-footer no-shadow
+  *ngIf="((allAnsweredForEvidence && !currentEvidence?.isSubmitted) || currentEvidence?.enableSubmit) && !sectionData?.observation">
   <ion-toolbar position="bottom">
     <ion-row>
-      <button ion-button full (click)="checkForNetworkTypeAlert()">{{'buttons.upload'|translate}} {{'buttons.and'|translate}}
+      <button ion-button full (click)="checkForNetworkTypeAlert()">{{'buttons.upload'|translate}}
+        {{'buttons.and'|translate}}
         {{'buttons.submit'|translate}}</button>
 
     </ion-row>
   </ion-toolbar>
 </ion-footer>
 
-<ion-footer no-shadow *ngIf="sectionData?.observation" >
-    <ion-toolbar position="bottom">
-      <ion-row>
-          <button ion-button full (click)="previewSubmission()">
-            {{'buttons.preview'|translate}}</button>
-      </ion-row>
-    </ion-toolbar>
-  </ion-footer>
+<ion-footer no-shadow *ngIf="sectionData?.observation && !currentEvidence?.isSubmitted">
+  <ion-toolbar position="bottom">
+    <ion-row>
+      <button ion-button full (click)="previewSubmission()">
+        {{'buttons.preview'|translate}}</button>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>
+
+<ion-footer no-shadow *ngIf="sectionData?.observation && currentEvidence?.isSubmitted">
+  <ion-toolbar position="bottom">
+    <ion-row>
+      <button ion-button full (click)="viewReport()">
+        {{'buttons.viewReports'|translate}}</button>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

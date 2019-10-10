@@ -36,6 +36,11 @@ export class SlackProvider {
       "text": "Mobile Exception Log. ",
       "attachments": [
         {
+          "fallback": "App Name",
+          "title": `App Name`,
+          "text": `${AppConfigs.appName}`
+        },
+        {
           "fallback": "Environment",
           "title": `Environment`,
           "text": `${AppConfigs.environment}`

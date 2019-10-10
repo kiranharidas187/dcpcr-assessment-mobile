@@ -14,7 +14,7 @@
 
 <div margin-top style="position: relative">
   <ion-item>
-    <ion-label floating>Date</ion-label>
+    <ion-label floating>{{'ionLabel.date'| translate}}</ion-label>
     <ion-datetime [disabled]="data?.autoCapture" displayFormat="{{data?.dateFormat}}" *ngIf="data?.validation.max && !data?.validation.min"
       [max]='data?.validation.max ? data?.validation.max : ""' (ionCancel)="canceled()" [(ngModel)]="data.value"
       (ngModelChange)="checkForValidation()"></ion-datetime>

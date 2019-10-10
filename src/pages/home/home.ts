@@ -1,17 +1,22 @@
 import { Component } from '@angular/core';
-import { NavController, Events, Platform } from 'ionic-angular';
+import { NavController, Events, Platform , PopoverController} from 'ionic-angular';
 import { CurrentUserProvider } from '../../providers/current-user/current-user';
 import { Network } from '@ionic-native/network';
 import { InstitutionsEntityList } from '../institutions-entity-list/institutions-entity-list';
 import { IndividualListingPage } from '../individual-listing/individual-listing';
 import { ObservationsPage } from '../observations/observations';
 import { SharingFeaturesProvider } from '../../providers/sharing-features/sharing-features';
-
 import { Media, MediaObject } from '@ionic-native/media';
 import { File } from '@ionic-native/file';
 import { ApiProvider } from '../../providers/api/api';
 import { AppConfigs } from '../../providers/appConfig';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { UtilsProvider } from '../../providers/utils/utils';
+import { RoleListingPage } from '../role-listing/role-listing';
+import { EvidenceProvider } from '../../providers/evidence/evidence';
+import { AssessmentServiceProvider } from '../../providers/assessment-service/assessment-service';
+import { ObservationDetailsPage } from '../observation-details/observation-details';
+import { GenericMenuPopOverComponent } from '../../components/generic-menu-pop-over/generic-menu-pop-over';
 
 declare var cordova: any;
 
@@ -33,7 +38,8 @@ export class HomePage {
   generalQuestions: any;
   schoolIndex = 0;
   currentProgramId: any;
-
+  profileRoles;
+  dashboardEnable: boolean;
   allPages: Array<Object> = [
 
     {
@@ -64,16 +70,29 @@ export class HomePage {
   fileName: string;
   audio: MediaObject;
   audioList: any[] = [];
+  canViewLoad: boolean = false;
+  pages;
+  recentlyModifiedAssessment: any;
+  institutionalAssessments ;
+  individualAssessments;
+  observations;
   constructor(public navCtrl: NavController,
     private currentUser: CurrentUserProvider,
     private network: Network,
+    private evdnsServ :EvidenceProvider,
+    private popoverCtrl : PopoverController,
     private media: Media,
+    private currentUserProvider: CurrentUserProvider,
+    private localStorageProvider: LocalStorageProvider,
     private file: File,
     private events: Events,
     private sharingFeature: SharingFeaturesProvider,
     private platform: Platform,
     private apiService: ApiProvider,
-    private localStorage:LocalStorageProvider
+    private localStorage: LocalStorageProvider,
+    private apiProvider: ApiProvider,
+    private utils: UtilsProvider,
+    private assessmentService: AssessmentServiceProvider
   ) {
 
 
@@ -86,22 +105,157 @@ export class HomePage {
   ionViewDidLoad() {
     this.userData = this.currentUser.getCurrentUserData();
     this.navCtrl.id = "HomePage";
+    this.localStorageProvider.getLocalStorage('profileRole').then(success => {
+      this.profileRoles = success;
+      if (success.roles.length > 0) {
+        this.dashboardEnable = true;
+        this.canViewLoad = true;
+        this.pages = this.allPages;
+        this.events.publish('multipleRole', true);
+      } 
 
+    }).catch(error => {
+      this.getRoles();
+    })
     if (this.network.type != 'none') {
       this.networkAvailable = true;
     }
 
     this.localStorage.getLocalStorage('staticLinks').then(success => {
-      if(success){
-
-      } else{
+      if (success) {
+      } else {
         this.getStaticLinks();
       }
     }).catch(error => {
       this.getStaticLinks();
     })
+
+   
   }
 
+  getIndividualAssessmentFromLocal() {
+    this.localStorage.getLocalStorage('individualList').then(data => {
+      if (data) {
+        this.individualAssessments = data;
+      } else {
+        this.getIndividualAssessmentsApi();
+      }
+    }).catch(error => {
+      this.getIndividualAssessmentsApi();
+    })
+  }
+
+  getInstitutionalAssessmentsFromLocal() {
+    this.localStorage.getLocalStorage('institutionalList').then(data => {
+      if (data) {
+        this.institutionalAssessments = data;
+
+      } else {
+        this.getInstitutionalAssessmentsApi();
+      }
+    }).catch(error => {
+      this.getInstitutionalAssessmentsApi();
+    })
+  }
+
+
+
+  getIndividualAssessmentsApi() {
+    this.assessmentService.getAssessmentsApi ('individual', true).then(programs =>{
+      this.individualAssessments = programs;
+    }).catch(error=>{
+    })
+    
+
+  }
+
+  getInstitutionalAssessmentsApi() {
+    this.assessmentService.getAssessmentsApi('institutional', true).then(programs => {
+      this.institutionalAssessments = programs;
+    }).catch(error=>{
+    })
+  }
+
+  getObservationListFromLocal() {
+    this.localStorage.getLocalStorage('createdObservationList').then(data => {
+      if (data) {
+        this.observations = data;
+      } else {
+        this.getObservationsFromApi();
+      }
+
+    }).catch(error => {
+      this.getObservationsFromApi();
+
+    })
+  }
+
+  navigateToCreatedObservationDetails(index) {
+    this.navCtrl.push(ObservationDetailsPage, { selectedObservationIndex: index })
+
+  }
+
+  getObservationsFromApi() {
+    this.apiProvider.httpGet(AppConfigs.cro.observationList, success => {
+      this.observations = success.result;
+      this.observations.forEach(element => {
+        if (element.entities.length >= 0) {
+          element.entities.forEach(entity => {
+            // entity.downloaded = false;
+            if(entity.submissions && entity.submissions.length > 0){
+              entity.submissions.forEach( submission =>{
+                submission['downloaded'] = false;
+              })
+            }
+          });
+        }
+      });
+      this.localStorage.setLocalStorage('createdObservationList', this.observations);
+    }, error => {
+     })
+  }
+
+  openMenu(event , index) {
+    // this.assessmentService.openMenu(event, this.programs, false);
+    // console.log("open menu")
+    // let popover = this.popoverCtrl.create(GenericMenuPopOverComponent , { showAbout : true ,showEdit : true , assessmentIndex : index , assessmentName :'createdObservationList'})
+    let popover = this.popoverCtrl.create(GenericMenuPopOverComponent , { "isObservation": true,"showAbout" : true ,"showEdit" : true , "assessmentIndex" : index , "assessmentName" :'createdObservationList'})
+  
+    popover.present(
+      {ev:event}
+      );
+      
+  }
+
+  ionViewDidEnter(){
+    // console.log("home page enter")
+    // this.localStorage.getLocalStorage('recentlyModifiedAssessment').then(succcess=>{
+    //   this.recentlyModifiedAssessment = succcess;
+    //   console.log(JSON.stringify(this.recentlyModifiedAssessment));
+    //   console.log("LAST MODEFIED AT ARRAY")
+    // }).catch(error =>{
+    //   console.log("LAST MODEFIED AT ARRAY IS BLANK")
+    // });
+
+    this.getInstitutionalAssessmentsFromLocal();
+    this.getIndividualAssessmentFromLocal();
+    this.getObservationListFromLocal();
+  }
+  getRoles() {
+    // return new Promise((resolve, reject) => {
+    let currentUser = this.currentUserProvider.getCurrentUserData();
+    this.apiProvider.httpGet(AppConfigs.roles.getProfile + currentUser.sub, success => {
+      this.profileRoles = success.result;
+      this.localStorage.setLocalStorage('profileRole', this.profileRoles);
+      console.log(JSON.stringify(success))
+      if (success.result.roles && success.result.roles.length > 0) {
+        this.dashboardEnable = true;
+        this.events.publish('multipleRole', true);
+      }
+    }, error => {
+      this.utils.openToast(error);
+    })
+  }
 
   socialSharingInApp() {
     this.sharingFeature.sharingThroughApp();
@@ -114,62 +268,65 @@ export class HomePage {
     });
   }
 
-  // getAudioList() {
-  //   if(localStorage.getItem("audiolist")) {
-  //     this.audioList = JSON.parse(localStorage.getItem("audiolist"));
-  //     console.log(this.audioList);
-  //   }
-  // }
-
-
-  // startRecord() {
-  //   if (this.platform.is('ios')) {
-  //     this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.3gp';
-  //     this.filePath = this.file.documentsDirectory.replace(/file:\/\//g, '') + this.fileName;
-
-  //     this.audio = this.media.create(this.filePath);
-  //   } else if (this.platform.is('android')) {
-  //     this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.3gp';
-  //     this.filePath = 'file:///'+this.file.externalDataDirectory.replace(/file:\/\//g, '') + this.fileName;
-  //     console.log(this.filePath)
-  //     this.audio = this.media.create(this.filePath);
-  //   }
-  //   this.audio.startRecord();
-  //   this.recording = true;
-  // }
-
-  // stopRecord() {
-  //   this.audio.stopRecord();
-  //   let data = { filename: this.fileName };
-  //   this.audioList.push(data);
-  //   localStorage.setItem("audiolist", JSON.stringify(this.audioList));
-  //   this.recording = false;
-  //   this.getAudioList();
-  // }
-
-
-  // playAudio(file,idx) {
-  //   console.log(file)
-  //   if (this.platform.is('ios')) {
-  //     this.filePath = this.file.documentsDirectory.replace(/file:\/\//g, '') + file;
-  //     this.audio = this.media.create(this.filePath);
-  //   } else if (this.platform.is('android')) {
-  //     this.filePath = 'file:///'+this.file.externalDataDirectory.replace(/file:\/\//g, '') + file;
-  //     console.log(this.filePath)
-  //     this.audio = this.media.create(this.filePath);
-  //     console.log("audio")
-  //   }
-  //   this.audio.play();
-  //   this.audio.setVolume(1);
-  // }
-
   goToPage(index) {
-    this.events.publish('navigateTab', this.allPages[index]['name'])
+    this.events.publish('navigateTab', index >= 0 ? this.allPages[index]['name'] : 'dashboard')
   }
 
   ionViewWillLeave() {
+    this.events.unsubscribe('multipleRole');
+  }
+
+
+  goToRecentlyUpdatedAssessment(assessment){
+    // this.utils.getAssessmentLocalStorageKey(assessment.submissionId)
+
+
+
+    let submissionId = assessment.submissionId
+    let heading = assessment.EntityName;
+    let recentlyUpdatedEntity = {
+      programName :assessment.programName,
+      ProgramId :assessment.ProgramId,
+      EntityName : assessment.EntityName,
+      EntityId :assessment.EntityId,
+      submissionId:submissionId,
+      isObservation : assessment.isObservation
+    }
+    // console.log("go to ecm called" + submissionId );
+
+    this.localStorage.getLocalStorage(this.utils.getAssessmentLocalStorageKey(submissionId)).then(successData => {
+
+      // console.log(JSON.stringify(successData));
+      //console.log("go to ecm called");
+
+      // successData = this.updateTracker.getLastModified(successData , submissionId)
+      // console.log("after modification")
+      if (successData.assessment.evidences.length > 1) {
+
+        this.navCtrl.push('EvidenceListPage', { _id: submissionId, name: heading ,recentlyUpdatedEntity : recentlyUpdatedEntity})
+
+      } else {
+        if (successData.assessment.evidences[0].startTime) {
+          //console.log("if loop " + successData.assessment.evidences[0].externalId)
+          this.utils.setCurrentimageFolderName(successData.assessment.evidences[0].externalId, submissionId)
+          this.navCtrl.push('SectionListPage', { _id: submissionId, name: heading, selectedEvidence: 0  ,recentlyUpdatedEntity : recentlyUpdatedEntity})
+        } else {
+
+          const assessment = { _id: submissionId, name: heading ,recentlyUpdatedEntity : recentlyUpdatedEntity}
+          this.openAction(assessment, successData, 0);
+          //console.log("else loop");
+
+        }
+      }
+    }).catch(error => {
+    });
 
   }
 
+  openAction(assessment, aseessmemtData, evidenceIndex) {
+    this.utils.setCurrentimageFolderName(aseessmemtData.assessment.evidences[evidenceIndex].externalId, assessment._id)
+    const options = { _id: assessment._id, name: assessment.name,recentlyUpdatedEntity : assessment.recentlyUpdatedEntity ,selectedEvidence: evidenceIndex, entityDetails: aseessmemtData };
+    this.evdnsServ.openActionSheet(options);
+  }
 
 }

@@ -3,20 +3,20 @@
   <div *ngFor="let fromField of formFields">
     <ion-list>
       <ion-item *ngIf="(fromField?.input === 'text' || fromField?.input === 'number')&& fromField?.visible && checkForVisibility(fromField)">
-        <ion-label floating>{{fromField?.label}}</ion-label>
+        <ion-label floating>{{fromField?.label}} <span class="_requiredClass" *ngIf="fromField?.validation?.required">*</span></ion-label>
         <ion-input [formControlName]="fromField.field" [id]="fromField?.field" [type]="fromField?.input"></ion-input>
 
       </ion-item>
 
       <ion-item *ngIf="fromField?.input === 'radio' && fromField?.visible && checkForVisibility(fromField)">
-        <ion-label>{{fromField?.label}}</ion-label>
+        <ion-label>{{fromField?.label}} <span class="_requiredClass" *ngIf="fromField?.validation?.required">*</span></ion-label>
         <ion-select [formControlName]="fromField.field">
           <ion-option *ngFor="let opt of fromField.options" value="{{opt?.value}}">{{opt?.label}}</ion-option>
         </ion-select>
       </ion-item>
 
       <ion-item *ngIf="fromField?.input === 'textarea' && fromField?.visible && checkForVisibility(fromField)">
-        <ion-label floating>{{fromField?.label}}</ion-label>
+        <ion-label floating>{{fromField?.label}} <span class="_requiredClass" *ngIf="fromField?.validation?.required">*</span></ion-label>
         <ion-textarea [formControlName]="fromField.field" [id]="fromField?.field" [type]="fromField?.input"></ion-textarea>
       </ion-item>
         <!-- {{form?.visibleIf && form?.visibleIf.length}} -->
@@ -26,7 +26,7 @@
       <!-- {{checkForVisibility(fromField)}} -->
         <!-- {{eval('"' + fromField.value + '"' + qst.visibleIf[0].operator + '"' + qst.visibleIf[0].value + '"')}} -->
       <ion-item *ngIf="(fromField?.input === 'multiselect' || fromField?.input === 'select') && fromField?.visible && checkForVisibility(fromField)">
-        <ion-label floating>{{fromField?.label}}</ion-label>
+        <ion-label floating>{{fromField?.label}} <span class="_requiredClass" *ngIf="fromField?.validation?.required">*</span></ion-label>
         <ion-select [formControlName]="fromField.field" [multiple]="fromField?.input === 'multiselect'">
           <ion-option *ngFor="let opt of fromField.options" value="{{opt?.value}}">{{opt?.label}}</ion-option>
         </ion-select>
@@ -34,15 +34,11 @@
 
 
       <ion-item *ngIf="fromField?.input === 'date' && fromField?.visible && checkForVisibility(fromField)">
-          <ion-label>{{fromField?.label}}</ion-label>
-          <ion-datetime displayFormat="DD/MM/YYYY" pickerFormat="DDDD MMMM YYYY" [formControlName]="fromField.field"></ion-datetime>
+          <ion-label>{{fromField?.label}} <span class="_requiredClass" *ngIf="fromField?.validation?.required">*</span></ion-label>
+          <ion-datetime displayFormat="DD/MM/YYYY" [min]="minDate" pickerFormat="DDDD MMMM YYYY" [formControlName]="fromField.field"></ion-datetime>
+
         </ion-item>
-
-
     </ion-list>
-
-
-
   </div>
 
 </div>

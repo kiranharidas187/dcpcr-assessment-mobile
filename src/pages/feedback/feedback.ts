@@ -6,6 +6,7 @@ import { ApiProvider } from '../../providers/api/api';
 import { AppConfigs } from '../../providers/appConfig';
 import { NetworkGpsProvider } from '../../providers/network-gps/network-gps';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'page-feedback',
@@ -23,6 +24,7 @@ export class FeedbackPage {
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
+    private translate : TranslateService,
     private viewCntrl: ViewController, private ngps: NetworkGpsProvider,
     private events: Events, private localStorage: LocalStorageProvider,
     private utils: UtilsProvider, private apiService: ApiProvider) {
@@ -92,7 +94,9 @@ export class FeedbackPage {
         this.utils.openToast(error.message);
       })
     } else {
-      this.utils.openToast("You need network connection for this action.", "Ok");
+      this.translate.get(['toastMessage.networkConnectionForAction', 'toastMessage.ok']).subscribe(translations =>{
+        this.utils.openToast(translations.networkConnectionForAction , translations.ok);
+      })
     }
 
   }

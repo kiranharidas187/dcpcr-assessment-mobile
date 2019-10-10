@@ -20,28 +20,28 @@ export class ProgramListingComponent {
   @Input() programList;
   @Input() entityType;
   @Input() assessmentlocalStorageName;
-  
+
   @Input() showMenu = true;
   @Output() getAssessmentDetailsEvent = new EventEmitter();
   @Output() openMenuEvent = new EventEmitter();
   @Input() enableAddRemoveEntityButton = false;
+  @Input() homePage: boolean = false;
   text: string;
 
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,
-    ) {
-      
+  ) {
+
   }
 
 
 
-  openAbout(index){
-    console.log(this.entityType)
-    this.navCtrl.push(AssessmentAboutPage , {assessmentIndex : index  , assessmentName : this.entityType+"List"})
+  openAbout(index) {
+    this.navCtrl.push(AssessmentAboutPage, { assessmentIndex: index, assessmentName: this.entityType + "List", programIndex: index, programs: this.programList, assessmentType: this.entityType, isObservation: false })
   }
-  goToEntityFunc(programIndex){
-    this.navCtrl.push(EntityListingPage,{ programIndex : programIndex , programs : this.programList , assessmentType : this.entityType })
+  goToEntityFunc(programIndex) {
+    this.navCtrl.push(EntityListingPage, { programIndex: programIndex, programs: this.programList, assessmentType: this.entityType })
 
   }
 
