@@ -1,5 +1,10 @@
 selectable-list {
-
+   .noDataMsg {
+      // flex-direction: column;
+      height: 500px;
+      font-size: 18px;
+      color: $dark-grey-color;
+   }
 }
 .columnFlex{
     display: flex;

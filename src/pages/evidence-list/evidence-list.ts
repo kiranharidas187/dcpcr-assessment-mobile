@@ -4,6 +4,7 @@ import { UtilsProvider } from '../../providers/utils/utils';
 import { FeedbackProvider } from '../../providers/feedback/feedback';
 import { EvidenceProvider } from '../../providers/evidence/evidence';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { UpdateTrackerProvider } from '../../providers/update-tracker/update-tracker';
 
 @IonicPage()
 @Component({
@@ -20,22 +21,27 @@ export class EvidenceListPage {
   isIos: boolean = this.platform.is('ios');
   generalQuestions: any;
   submissionId: any;
+  recentlyUpdatedEntity: any;
   constructor(public navCtrl: NavController, public navParams: NavParams,
+    private updateTracker :UpdateTrackerProvider,
     private appCtrl: App, private utils: UtilsProvider, private localStorage: LocalStorageProvider,
     private feedback: FeedbackProvider, private evdnsServ: EvidenceProvider, private platform: Platform) {
     this.entityId = this.navParams.get('_id');
     this.entityName = this.navParams.get('name');
+    this.recentlyUpdatedEntity = this.navParams.get('recentlyUpdatedEntity');
     // this.submissionId = this.navParams.get('submissionId');
   }
  
   ionViewWillEnter() {
+    console.log(JSON.stringify(this.recentlyUpdatedEntity))
+
     console.log('ionViewDidLoad EvidenceListPage');
     this.utils.startLoader();
     this.localStorage.getLocalStorage(this.utils.getAssessmentLocalStorageKey(this.entityId)).then(successData => {
       this.utils.stopLoader();
       this.entityData = successData;
-      console.log(JSON.stringify(successData));
-      this.entityEvidences = this.entityData['assessment']['evidences'] ;
+      // console.log(JSON.stringify(successData));
+      this.entityEvidences = this.updateTracker.getLastModifiedInEvidences(this.entityData['assessment']['evidences'],this.recentlyUpdatedEntity) ;
       this.mapCompletedAndTotalQuestions();
       this.checkForProgressStatus();
       this.localStorage.getLocalStorage('generalQuestions_' + this.entityId).then(successData => {

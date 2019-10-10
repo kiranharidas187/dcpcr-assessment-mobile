@@ -2,5 +2,8 @@
     <button *ngIf="showAbout" ion-item clear small padding-left class="_flex-box _justify-content-center" (click)="goToAbout()">
       {{'buttons.about'|translate}} 
     </button>
+    <button *ngIf="showEdit" ion-item clear small padding-left class="_flex-box _justify-content-center" (click)="goToEdit()">
+      {{'buttons.edit'|translate}} 
+    </button>
     <!-- {{showAbout}} -->
 </ion-list>

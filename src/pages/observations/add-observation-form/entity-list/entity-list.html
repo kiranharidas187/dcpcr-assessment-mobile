@@ -1,25 +1,53 @@
 <ion-header>
-  <header [title]="'headings.addSchools'|translate" [hideBack]="false" [showMenu]="false" [showClose]="true" [disableNetwork]="true">
-    </header>
- </ion-header>
- <ion-content padding>
-        <selectable-list [selectedListCount]="selectedListCount" (infinityScrollEvent)="search()" [totalCount]="totalCount" [selectableList]="selectableList" (searchUrl)="search($event)"  [index]="index"></selectable-list>
- </ion-content>
- <ion-footer no-shadow>
+  <header [title]="'headings.addSchools'|translate" [hideBack]="false" [showMenu]="false" [showClose]="true"
+    [disableNetwork]="true">
+  </header>
+  <ion-toolbar>
+    <ion-searchbar debounce="500" type="3" (ionClear)="clearEntity()" autofocus (ionChange)="searchEntity($event)"
+      placeholder="{{'message.startSearchEntity' | translate}}"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+
+  <ion-list *ngIf="selectableList" (ionScroll)="detectBottom()">
+    <ng-container *ngFor="let listItem of selectableList">
+      <ion-item *ngIf="!listItem.isSelected">
+        <ion-label text-wrap>{{listItem.name}}</ion-label>
+        <ion-checkbox color="dark" [checked]="listItem.selected" (click)="checkItem(listItem)"></ion-checkbox>
+      </ion-item>
+    </ng-container>
+  </ion-list>
+  <ion-list *ngIf="!selectableList?.length">
+    <div class="_flex-box _justify-content-center noDataMsg">
+      {{ 'message.searchEntities' | translate}}
+    </div>
+  </ion-list>
+
+  <div *ngIf="!(this.selectableList?.length == totalCount) && this.selectableList?.length > 0">
+    <ion-infinite-scroll [enabled]="!(this.selectableList?.length == totalCount) && this.selectableList?.length > 0"
+      (ionInfinite)="doInfinite($event)">
+      <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+
+
+</ion-content>
+<ion-footer no-shadow>
   <ion-toolbar class="_toolbar-background-md" position="bottom">
     <ion-row>
       <ion-col>
-        <button ion-button full (click)="cancel()" class="btnText" >
+        <button ion-button full (click)="cancel()" class="btnText">
           <ion-icon name="close" margin-right></ion-icon>
           {{'buttons.cancel' | translate}}
         </button>
-    </ion-col>
-    <ion-col>
-      <button ion-button full (click)="addSchools()" class="btnText" [disabled]="selectedListCount.count === 0">
-        <ion-icon name="add" margin-right></ion-icon>
-        {{'buttons.add' | translate}}
-      </button>
-  </ion-col>
+      </ion-col>
+      <ion-col>
+        <button ion-button full (click)="addSchools()" class="btnText" [disabled]="selectedListCount.count === 0">
+          <ion-icon name="add" margin-right></ion-icon>
+          {{'buttons.add' | translate}}
+        </button>
+      </ion-col>
     </ion-row>
   </ion-toolbar>
- </ion-footer>
+</ion-footer>

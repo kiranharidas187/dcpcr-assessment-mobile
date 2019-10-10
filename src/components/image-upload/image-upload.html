@@ -23,7 +23,7 @@
   <ion-card *ngIf="datas?.allowAudioRecording">
     <ion-card-content>
       <ion-row *ngIf="!recording">
-          <button ion-button primary (click)="startRecord()">
+          <button ion-button primary (click)="checkRecordMediaPermission()">
             <ion-icon name="mic"></ion-icon>&nbsp;&nbsp;Start Record
           </button>
       </ion-row>

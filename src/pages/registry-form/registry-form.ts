@@ -6,6 +6,7 @@ import { ApiProvider } from '../../providers/api/api';
 import { AppConfigs } from '../../providers/appConfig';
 import { NetworkGpsProvider } from '../../providers/network-gps/network-gps';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'page-registry-form',
@@ -30,6 +31,7 @@ export class RegistryFormPage {
     public navParams: NavParams,
     private viewCntrl: ViewController, private ngps: NetworkGpsProvider,
     private events: Events, private localStorage: LocalStorageProvider,
+    private translate: TranslateService,
     private utils: UtilsProvider, private apiService: ApiProvider) {
     this.schoolId = this.navParams.get('_id');
     this.submissionId = this.navParams.get('submissionId');
@@ -120,7 +122,9 @@ export class RegistryFormPage {
       }, error => {
         //console.log(" uploaded api error");
 
-        this.utils.openToast("Something went wrong. Please try again after sometime.", "Ok");
+        this.translate.get(['toastMessage.someThingWentWrongTryLater','toastMessage.ok']).subscribe(translations =>{
+          this.utils.openToast(translations.someThingWentWrongTryLater);
+        })
         this.utils.stopLoader();
         obj.uploaded = false;
         this.viewCntrl.dismiss(obj)

@@ -5,3 +5,10 @@ page-add-observation-form {
     height: calc(70vh );
     overflow-y: auto;
 }
+
+.active{
+    background-color: $primary-color;
+}
+.whiteColor{
+    color : $white-color !important;
+}

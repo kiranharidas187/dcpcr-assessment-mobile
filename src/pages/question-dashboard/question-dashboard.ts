@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ViewController } from 'ionic-angular';
 import { UtilsProvider } from '../../providers/utils/utils';
+import { TranslateService } from '@ngx-translate/core';
 
 
 /**
@@ -22,6 +23,7 @@ export class QuestionDashboardPage {
   currentViewIndex: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
+    private translate: TranslateService,
     private utils: UtilsProvider, private viewCtrl: ViewController) {
   }
 
@@ -34,9 +36,12 @@ export class QuestionDashboardPage {
   }
 
   isQuestionComplete(question) {
+    console.log("iscomplete called")
     if (question.responseType.toLowerCase() === 'matrix') {
       return this.utils.isMatrixQuestionComplete(question);
-    } else {
+    } else if (question.responseType.toLowerCase() === 'pagequestions'){
+      return this.utils.isPageQuestionComplete(question);
+    }else {
       return this.utils.isQuestionComplete(question);
     }
   }
@@ -46,7 +51,9 @@ export class QuestionDashboardPage {
   }
 
   openToast(): void {
-    this.utils.openToast("This questions response is not required to complete the assessment.")
+    this.translate.get('toastMessage.questionResponseNotRequiredForCompleteAssessment').subscribe(translations =>{
+      this.utils.openToast( translations);
+    })
   }
 
   goToQuestion(index) {

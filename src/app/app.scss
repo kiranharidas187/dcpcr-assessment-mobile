@@ -28,6 +28,7 @@ $red-color: #DC143C;
 $orange-color: #FF8C00;
 $toolbar-background: $blue-color;
 $black-color: #222;
+$secondry-color: #5CB843;
 
 ion-content {
     background: $grey-color !important;
@@ -37,6 +38,10 @@ ion-content {
     background: $white-color !important;
 }
 
+
+ion-step-header .ionic-step-header-icon-active {
+    background-color: $secondry-color !important;
+}
 ._flex-box {
     display: flex;
     align-items: center;
@@ -60,7 +65,10 @@ ion-content {
 ._justify-content-space-between{
     justify-content: space-between
 }
-
+._noWrap{
+    flex-wrap:nowrap;
+    white-space: nowrap;
+}
 ._tips {
     color: $blue-color;
     position: absolute;

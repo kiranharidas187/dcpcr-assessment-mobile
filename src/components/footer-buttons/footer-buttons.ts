@@ -14,6 +14,7 @@ export class FooterButtonsComponent implements OnChanges {
   @Output() backAction = new EventEmitter();
   @Input() completedQuestionCount = 0 ;
   @Input() questionCount  = 0 ;
+  @Input() isSubmitted ;
   percentage: number = 0;
   
   constructor() {
@@ -25,7 +26,9 @@ export class FooterButtonsComponent implements OnChanges {
   this.percentage = Math.trunc(this.percentage)
     }
     else{
-      this.percentage = 0
+      
+      this.percentage = this.isSubmitted ? 100 : 0 ;
+      this.completedQuestionCount = this.isSubmitted ? this.questionCount : 0 ;
     }
 }
   next(status?: string): void {

@@ -32,7 +32,7 @@
               <ion-radio  name="start" value="{{option?.value}}"></ion-radio>
             </ion-item>
             <ion-item *ngIf="field?.field != 'gpsLocation' && field?.visible && ( field?.input === 'data')">
-                <ion-label floating>Date</ion-label>
+                <ion-label floating>{{'ionLabel.date' | translate}}</ion-label>
                 <ion-input type="field?.input" [(ngModel)]="field.value"  [readonly]="!field.editable"></ion-input>
                   <ion-datetime [disabled]="field?.autoCapture" displayFormat="{{field?.dateFormat}}" 
                   [max]='field?.validation.max ? field?.validation.max : ""'  [(ngModel)]="field.value"
@@ -68,7 +68,7 @@
   <ion-toolbar position="bottom">
     <ion-row>
       <ion-col>
-        <button ion-button float-left block (click)="updateProfile()">Update</button>
+        <button ion-button float-left block (click)="updateProfile()">{{'buttons.update' | translate}}</button>
       </ion-col>
     </ion-row>
   </ion-toolbar>

@@ -3,20 +3,25 @@
 <div *ngFor="let program of programList; let i = index">
   <!-- <h3 padding class="bold">Program - {{program.name}} ({{program.externalId}})</h3> -->
 
-<ion-card>
+  <ion-card>
 
-  <ion-item  text-wrap>
-    <div class="_flex-box"  (click)="goToEntityFunc(i)">
-      <div style="flex:1">
-        {{program.name}}   
+    <ion-item text-wrap>
+      <div class="_flex-box" (click)="goToEntityFunc(i)">
+        <ion-icon name="book" class="logoIcon" *ngIf="homePage"></ion-icon>
+        <ion-icon name="person" class="logoIcon" *ngIf="homePage && programList==='individualAssessments'"></ion-icon>
+
+        <div style="flex:1">
+          {{program.name}}
+        </div>
+        <ion-icon name="information-circle" class="menuIcon" (click)="$event.stopPropagation() ;openAbout(i)">
+        </ion-icon>
+        <ion-icon name="play" class="menuIcon" *ngIf="!homePage"></ion-icon>
+
       </div>
-      <ion-icon name="information-circle"  class="menuIcon" (click)="$event.stopPropagation() ;openAbout(i)"></ion-icon>
-      <ion-icon name="play"  class="menuIcon" ></ion-icon>
+    </ion-item>
 
-    </div>
-  </ion-item>
-
-</ion-card>
+  </ion-card>
 </div>
 
-<div class="_flex-box msgContainer" *ngIf="!programList?.length">{{'message.no' | translate}} {{'message.program' | translate}}</div>
+<div class="_flex-box msgContainer" *ngIf="!programList?.length">{{'message.no' | translate}}
+  {{'message.program' | translate}}</div>

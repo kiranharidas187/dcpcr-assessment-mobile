@@ -1,0 +1,47 @@
+<!--
+  Generated template for the ObservationReportsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <header [title]="'headings.observationReports'|translate" [hideBack]="false">
+  </header>
+</ion-header>
+
+
+<ion-content>
+  <div *ngIf="!error">
+    <h4 padding style="text-transform: capitalize">
+      {{reportObj?.observationName}} {{reportObj?.entityName ? ' > ' : ''}} {{reportObj?.entityName }}
+    </h4>
+
+    <div *ngFor="let element of reportObj?.response;let i = index">
+      <ion-card [ngSwitch]="element?.responseType">
+        <reports-text [data]="element" [questionNumber]="i+1" *ngSwitchCase="'text'"></reports-text>
+        <reports-text [data]="element" [questionNumber]="i+1" *ngSwitchCase="'number'"></reports-text>
+        <reports-text [data]="element" [questionNumber]="i+1" *ngSwitchCase="'date'"></reports-text>
+        <pie-chart [data]="element" [questionNumber]="i+1" *ngSwitchCase="'radio'"></pie-chart>
+        <bar-chart [data]="element" [questionNumber]="i+1" *ngSwitchCase="'multiselect'"></bar-chart>
+        <reports-text [data]="element" [questionNumber]="i+1" *ngSwitchDefault></reports-text>
+      </ion-card>
+    </div>
+  </div>
+  <div class="_flex-box _justify-content-center _errorBox" *ngIf="!reportObj?.response">
+    {{reportObj?.data}}
+  </div>
+
+  <ion-fab bottom right *ngIf="reportObj?.response">
+    <button ion-fab mini>
+      <ion-icon name="more"></ion-icon>
+    </button>
+    <ion-fab-list side="left">
+      <button ion-fab (click)="downloadSharePdf('download')">
+        <ion-icon name="download"></ion-icon>
+      </button>
+      <button ion-fab (click)="downloadSharePdf('share')">
+        <ion-icon name="share"></ion-icon>
+      </button>
+    </ion-fab-list>
+  </ion-fab>
+</ion-content>

@@ -30,13 +30,20 @@ import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 import { AudioRecordingListingComponent } from './audio-recording-listing/audio-recording-listing';
 import { AudioListComponent } from './audio-list/audio-list';
+import { ReportsTextComponent } from './reports-text/reports-text';
+import { PieChartComponent } from './pie-chart/pie-chart';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { BarChartComponent } from './bar-chart/bar-chart';
+import { ReportEntityListComponent } from './report-entity-list/report-entity-list';
+import { PercentageColumnChartsComponent } from './percentage-column-charts/percentage-column-charts';
+import { ExpansionPanelComponent } from './expansion-panel/expansion-panel';
+import { PageQuestionComponent } from './page-question/page-question';
 
 @NgModule({
 	declarations: [
 		InputTypeComponent,
 		RadioTypeComponent,
     MultipleChoiceTypeComponent,
-    
     DateTypeComponent,
     RemarksComponent,
     ImageUploadComponent,
@@ -55,14 +62,22 @@ import { AudioListComponent } from './audio-list/audio-list';
     GenericMenuPopOverComponent,
     ProgramListingComponent,
     AudioRecordingListingComponent,
-    AudioListComponent
+    AudioListComponent,
+    ReportsTextComponent,
+    PieChartComponent,
+    BarChartComponent,
+    ReportEntityListComponent,
+    PercentageColumnChartsComponent,
+    ExpansionPanelComponent,
+    PageQuestionComponent
   ],
 	imports: [
 		IonicModule,
     DirectivesModule,
     PipesModule,
     TranslateModule,
-    AngularFontAwesomeModule
+    AngularFontAwesomeModule,
+    HighchartsChartModule
 	],
 	exports: [
 		InputTypeComponent,
@@ -86,7 +101,14 @@ import { AudioListComponent } from './audio-list/audio-list';
     GenericMenuPopOverComponent,
     ProgramListingComponent,
     AudioRecordingListingComponent,
-    AudioListComponent
+    AudioListComponent,
+    ReportsTextComponent,
+    PieChartComponent,
+    BarChartComponent,
+    ReportEntityListComponent,
+    PercentageColumnChartsComponent,
+    ExpansionPanelComponent,
+    PageQuestionComponent
 	],
 	entryComponents: [
 		InputTypeComponent,

@@ -18,7 +18,7 @@
 
       <ion-list>
         <ion-item *ngFor="let question of section?.questions;let i = index" text-wrap>
-          <div *ngIf="question?.responseType !== 'matrix'">
+          <div *ngIf="question?.responseType !== 'matrix' &&  question?.responseType !== 'pageQuestions'">
             <h3>Q{{i+1}}. {{question?.question[0]}}</h3>
             <p *ngIf="question?.responseType !== 'radio' && question?.responseType !== 'multiselect' "> Ans.
               {{question?.value}}</p>
@@ -27,7 +27,7 @@
             <p *ngIf="question.remarks">{{question.remarks}}</p>
           </div>
 
-          <div *ngIf="question?.responseType === 'matrix'">
+          <div *ngIf="question?.responseType === 'matrix' &&  question?.responseType !== 'pageQuestions'">
             <h3>Q{{i+1}}. {{question?.question[0]}}</h3>
             <div *ngFor="let instance of question.value;let j = index" class="instanceQuest">
               <h5 class="instacnce">{{question?.instanceIdentifier}} {{j+1}}</h5>
@@ -43,7 +43,51 @@
             </div>
 
           </div>
+          <div *ngIf=" question?.responseType === 'pageQuestions'">
+            
+            <h3>Q{{i+1}}. {{question?.question[0]}}</h3>
 
+            <div *ngFor="let answer of  question.pageQuestions; let k = index" class="matrixQuestion">
+              <!-- <div *ngIf="question?.responseType === 'matrix';else notMatrix">
+                <div *ngFor="let instance of answer.value;let j = index" class="instanceQuest">
+                  <h5 class="instacnce">{{question?.instanceIdentifier}} {{j+1}}</h5>
+                  <div *ngFor="let inst of  instance; let k = index" class="matrixQuestion">
+                    <h3>Q{{k+1}}. {{inst?.question[0]}}</h3>
+                    <p *ngIf="inst?.responseType !== 'radio' && inst?.responseType !== 'multiselect' "> Ans.
+                      {{inst?.value}}</p>
+                    <p *ngIf="inst?.responseType === 'radio' || inst?.responseType === 'multiselect' "> Ans.
+                      {{getLabels(inst)}}</p>
+                    <p *ngIf="question.remarks">{{question.remarks}}</p>
+                  </div>
+                </div>
+              </div> -->
+              <div *ngIf="answer?.responseType === 'matrix';else notMatrix">
+                  <h3>Q{{i+1}}. {{answer?.question[0]}}</h3>
+                  <div *ngFor="let instance of answer.value;let j = index" class="instanceQuest">
+                    <h5 class="instacnce">{{answer?.instanceIdentifier}} {{j+1}}</h5>
+                    <div *ngFor="let ans of  instance; let k = index" class="matrixQuestion">
+                      <h3>Q{{k+1}}. {{ans?.question[0]}}</h3>
+                      <p *ngIf="ans?.responseType !== 'radio' && ans?.responseType !== 'multiselect' "> Ans.
+                        {{ans?.value}}</p>
+                      <p *ngIf="ans?.responseType === 'radio' || ans?.responseType === 'multiselect' "> Ans.
+                        {{getLabels(ans)}}</p>
+                      <p *ngIf="question.remarks">{{question.remarks}}</p>
+      
+                    </div>
+                  </div>
+              </div>
+              <ng-template #notMatrix>
+                <div class="instanceQuest">
+                  <h5>Q{{k+1}}. {{answer?.question[0]}}</h5>
+                  <p *ngIf="answer?.responseType !== 'radio' && answer?.responseType !== 'multiselect' "> Ans.
+                    {{answer?.value}}</p>
+                  <p *ngIf="answer?.responseType === 'radio' || answer?.responseType === 'multiselect' "> Ans.
+                    {{getLabels(answer)}}</p>
+                  <p *ngIf="question.remarks">{{question.remarks}}</p>
+                </div>
+              </ng-template>
+            </div>
+          </div>
         </ion-item>
       </ion-list>
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, Events, Platform, AlertController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { CurrentUserProvider } from '../../providers/current-user/current-user';
@@ -13,6 +13,8 @@ import { Network } from '@ionic-native/network';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
 import { TranslateService } from '@ngx-translate/core';
 import { PreviewPage } from '../preview/preview';
+import { ObservationReportsPage } from '../observation-reports/observation-reports';
+import { UpdateTrackerProvider } from '../../providers/update-tracker/update-tracker';
 
 @IonicPage()
 @Component({
@@ -32,6 +34,7 @@ export class SectionListPage {
   currentEvidence: any;
   networkAvailable: any;
   isIos: boolean = this.platform.is('ios');
+  recentlyUpdatedEntity: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
     private storage: Storage, private appCtrl: App,
@@ -41,30 +44,37 @@ export class SectionListPage {
     private feedback: FeedbackProvider,
     private translate: TranslateService,
     private events: Events, private platform: Platform,
+    private updateTracker : UpdateTrackerProvider,
     private alertCtrl: AlertController, private network: Network, private localStorage: LocalStorageProvider) {
-
+      
     this.events.subscribe('network:offline', () => {
       this.networkAvailable = false;
     });
-
+   
     // Online event
     this.events.subscribe('network:online', () => {
       this.networkAvailable = true;
     });
     this.networkAvailable = this.ngps.getNetworkStatus()
+    
   }
+
+ 
   ionViewWillEnter() {
-    // //console.log('Entered')
-    // //console.log(JSON.stringify(this.userData))
-    //console.log('ionViewDidLoad SectionListPage');
+  
     this.utils.startLoader();
     this.userData = this.currentUser.getCurrentUserData();
+    
     this.submissionId = this.navParams.get('_id');
     this.entityName = this.navParams.get('name');
     this.selectedEvidenceIndex = this.navParams.get('selectedEvidence');
+    this.recentlyUpdatedEntity = this.navParams.get('recentlyUpdatedEntity');
+    
     this.localStorage.getLocalStorage(this.utils.getAssessmentLocalStorageKey(this.submissionId)).then(data => {
       this.sectionData = data;
-      this.currentEvidence = this.sectionData['assessment']['evidences'][this.selectedEvidenceIndex];
+      let assessmentDetails = this.updateTracker.getLastModifiedInSection(data,this.selectedEvidenceIndex ,this.submissionId,this.recentlyUpdatedEntity);
+      this.currentEvidence = assessmentDetails['assessment']['evidences'][this.selectedEvidenceIndex];
+      console.log(JSON.stringify(this.currentEvidence))
       this.evidenceSections = this.currentEvidence['sections'];
       this.selectedEvidenceName = this.currentEvidence['name'];
       this.checkForEvidenceCompletion();
@@ -90,7 +100,7 @@ export class SectionListPage {
     }).catch(error => {
 
     })
-
+     
   }
 
 
@@ -99,7 +109,17 @@ export class SectionListPage {
     for (const section of this.evidenceSections) {
       allAnswered = true;
       for (const question of section.questions) {
-        if (!question.isCompleted) {
+        if( question.responseType === 'pageQuestions'){
+          for (const questions of question.pageQuestions)
+          {
+              if(!questions.isCompleted){
+                allAnswered = false
+                break;
+              }
+              break;
+            }    
+            break;    
+        }else  if (!question.isCompleted) {
           allAnswered = false;
           break;
         }
@@ -172,6 +192,10 @@ export class SectionListPage {
       });
       alert.present();
     }
+  }
+
+  viewReport() {
+    this.navCtrl.push(ObservationReportsPage, { submissionId: this.submissionId })
   }
 
 

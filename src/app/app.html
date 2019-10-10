@@ -17,6 +17,13 @@
     <ion-item><ion-icon name="help" size="large" slot="start" class="sizeAdj" margin-right></ion-icon>{{'tabs.faqs' | translate}}</ion-item>
     <ion-item><ion-icon name="information-circle" size="large" slot="start" class="sizeAdj" margin-right></ion-icon>{{'tabs.about'| translate}}</ion-item> -->
       <!-- <ion-item>Menu Item</ion-item> -->
+      <ion-item class="info">
+        <div class="appVersion _flex-box _justify-content-space-between">
+          <span *ngIf="appEnvironment !== 'Production'" margin-right>{{appEnvironment}} </span>
+          <span>{{appVersion}}</span>
+        </div>
+        <!-- <div>hii</div> -->
+      </ion-item>
     </ion-list>
   </ion-content>
 </ion-menu>

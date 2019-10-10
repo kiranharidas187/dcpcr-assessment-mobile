@@ -8,6 +8,7 @@ import { AppConfigs } from '../../providers/appConfig';
 import { Storage } from '@ionic/storage';
 import { SlackProvider } from '../../providers/slack/slack';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { TranslateService } from '@ngx-translate/core';
 
 declare var cordova: any;
 
@@ -47,6 +48,7 @@ export class GeneralQuestionSubmitPage {
     public navParams: NavParams,
     private storage: Storage,
     private file: File,
+    private translate:TranslateService,
     private fileTransfer: FileTransfer,
     private apiService: ApiProvider,
     private utils: UtilsProvider,
@@ -114,7 +116,10 @@ export class GeneralQuestionSubmitPage {
 
     }, error => {
       this.utils.stopLoader();
-      this.utils.openToast('Unable to get google urls')
+      this.translate.get('toastMessage.enableToGetGoogleUrls').subscribe(translations =>{
+        this.utils.openToast(translations);
+      })
+     
     })
   }
 
@@ -163,7 +168,9 @@ export class GeneralQuestionSubmitPage {
         const errorObject = { ... this.errorObj };
         this.retryCount++;
         if (this.retryCount > 3) {
-          this.utils.openToast("Something went wrong. Please try after sometime.")
+          this.translate.get('toastMessage.someThingWentWrongTryLater').subscribe(translations =>{
+            this.utils.openToast(translations);
+          })
           errorObject.text = `${this.page}: Cloud image upload failed.URL:  ${this.imageList[this.uploadIndex].url}.
           Details: ${JSON.stringify(err)}`;
           this.slack.pushException(errorObject);

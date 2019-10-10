@@ -53,7 +53,7 @@ export class ObservationServiceProvider {
       
       this.utils.stopLoader();
       // console.log("resolving program")
-      this.events.publish('refreshObservationList');
+      // this.events.publish('refreshObservationList');
 
       resolve(success.result.assessment.submissionId);
 
@@ -73,8 +73,6 @@ export class ObservationServiceProvider {
 
   refreshObservationList(observationList , event? :any){
     return new Promise((resolve, reject) =>{
-      // event ? "" : this.utils.startLoader();
-      
       let createdObservation ;
       let downloadSubmission =[];
       observationList.forEach(entity => {
@@ -84,7 +82,7 @@ export class ObservationServiceProvider {
         element.submissions.forEach( submission =>{
           if(submission.downloaded){
             downloadSubmission.push(submission._id);
-            console.log(submission._id);
+            // console.log(submission._id);
           }
         });
       }
@@ -92,7 +90,7 @@ export class ObservationServiceProvider {
       }
 
       });
-      console.log(JSON.stringify(downloadSubmission))
+      // console.log(JSON.stringify(downloadSubmission))
       this.apiProvider.httpGet(AppConfigs.cro.observationList, success => {
         createdObservation = success.result;
 
@@ -104,8 +102,8 @@ export class ObservationServiceProvider {
           });
           });
         });
-        event ? event.complete() : "";
-        console.log(JSON.stringify(createdObservation))
+        event ? event.complete() : ""
+        // console.log(JSON.stringify(createdObservation))
         console.log("if no previous thing found");
 
         this.localStorage.setLocalStorage('createdObservationList', createdObservation);
@@ -131,17 +129,17 @@ export class ObservationServiceProvider {
           });
           });
         });
-        console.log(JSON.stringify(createdObservation))
+        // console.log(JSON.stringify(createdObservation))
         // console.log(JSON.stringify(success))
         console.log("else - previous thing found");
         this.localStorage.setLocalStorage('createdObservationList', createdObservation);
-        event ? event.complete() : "";
+        event ? event.complete() :""
         // this.
         resolve(createdObservation);
      
     }
   },error=>{
-    event ? event.complete() : "";
+    event ? event.complete() :""
     reject();
   });
     });

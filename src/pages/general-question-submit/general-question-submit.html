@@ -2,11 +2,11 @@
   <div class="_flex-box  fullContainer _justify-content-center _flex-direction-column" margin-top>
     <ion-icon name="cloud-upload" margin class="uploadIcon"></ion-icon>
     <div class="_flex-box uploadMsg">
-      Uploading
+      {{'message.uploading'| translate}}
     </div>
     <div class="_flex-box uploadMsg" margin-top *ngIf="imageList?.length">
-      {{uploadIndex + 1}} of {{imageList?.length}} images.
+      {{uploadIndex + 1}} {{'message.of'|translate}} {{imageList?.length}}  {{'message.image'|translate}}. 
     </div>
-    <div class="_flex-box" margin-top>Please don't close the app or go back.</div>
+    <div class="_flex-box" margin-top>{{'message.dontCloseApp' | translate }}</div>
   </div>
 </ion-content>

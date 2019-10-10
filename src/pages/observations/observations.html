@@ -11,20 +11,20 @@
   <div padding>
     <ion-segment [(ngModel)]="selectedTab">
       <ion-segment-button value="active" (click)="onTabChange('active')">
-        Active
+        {{'buttons.active' | translate}}
         <ion-badge color="primary"  item-right>{{activeListLength}}</ion-badge>
 
       </ion-segment-button>
       <ion-segment-button value="draft" (click)="onTabChange('draft')">
-        Draft
+        {{'buttons.draft' | translate}}
         <ion-badge color="primary"  item-right>{{draftListLength}}</ion-badge>
 
       </ion-segment-button>
-      <ion-segment-button value="completed" (click)="onTabChange('completed')">
-        Completed
+      <!-- <ion-segment-button value="completed" (click)="onTabChange('completed')">
+        {{'buttons.completed' | translate}}
         <ion-badge color="primary"  item-right>{{completeListLength}}</ion-badge>
 
-      </ion-segment-button>
+      </ion-segment-button> -->
     </ion-segment>
   </div>
 
@@ -59,7 +59,7 @@
           </ng-template>
         <span float-right *ngIf="draft?.data?.isComplete"
           class="_completed _flex-box">
-          {{'labels.completed'|translate}} <ion-icon name="checkmark-circle" class="_progressIcon" margin-left>
+          {{'labels.readytoPublish'|translate}} <ion-icon name="checkmark-circle" class="_progressIcon" margin-left>
           </ion-icon>
         </span>
         
@@ -73,7 +73,7 @@
       </ion-list>
       <ion-list *ngIf="!draftObservation.length " >
        <span class="_flex-box _justify-content-center">
-          No Drafts
+        {{'message.noDraft' | translate}}
        </span>
         </ion-list>
     </div>
@@ -96,8 +96,12 @@
   </div>
 
   <ion-fab bottom right >
-    <button ion-fab mini color="secondary" (click)="addObservation()">
+    <!-- <button ion-fab mini color="secondary" (click)="addObservation()">
       <ion-icon name="add"></ion-icon>
+    </button> -->
+    <button ion-fab mini (click)="refresh()" >
+      <ion-icon name="refresh"></ion-icon>
+      <!-- {{'buttons.refresh' | translate}} -->
     </button>
   </ion-fab>
 </ion-content>
@@ -106,9 +110,14 @@
   <ion-toolbar class="_toolbar-background-md" position="bottom">
     <ion-row>
       <ion-col>
-        <button ion-button full (click)="refresh()" class="btnText">
+        <!-- <button ion-button full (click)="refresh()" class="btnText">
           <ion-icon name="refresh" margin-right></ion-icon>
           {{'buttons.refresh' | translate}}
+        </button> -->
+
+        <button ion-button full class="btnText" (click)="addObservation()">
+          <ion-icon name="add" padding-right></ion-icon> 
+          {{ 'buttons.addNew' | translate}}
         </button>
       </ion-col>
     </ion-row>

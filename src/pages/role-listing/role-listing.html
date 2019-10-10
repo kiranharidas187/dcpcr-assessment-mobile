@@ -1,0 +1,26 @@
+<!--
+  Generated template for the RoleDashboardPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+  <header [title]="'headings.userRolePage'|translate" [hideBack]="false">
+  </header>
+</ion-header>
+
+
+
+<ion-content padding>
+  <ion-list>
+    <button ion-item *ngFor="let role of roles" (click)="roleSelected(role)">
+      <div class="_flex-box _justify-content-space-between">
+        <div style="flex:1">
+          {{ role.title }}
+        </div>
+        <ion-icon name="arrow-round-forward" ></ion-icon>
+      </div>
+    </button>  
+  </ion-list>
+
+</ion-content>

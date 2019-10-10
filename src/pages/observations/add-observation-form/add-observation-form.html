@@ -7,8 +7,9 @@
 <ion-content padding-top>
   <ion-stepper [mode]="'horizontal'" #stepper (selectIndexChange)="selectChange($event)">
 
+    <!-- <ion-step label="Type" >
     <ion-step label="Type" >
-        <!-- <h4>Observation Type</h4> -->
+        <h4>Observation Type</h4> \
       
       <ion-list radio-group [(ngModel)]="entityType">
         <ion-label>Select a observation Type</ion-label>
@@ -17,7 +18,7 @@
           <ion-radio value="{{type._id}}"></ion-radio>
         </ion-item>
       </ion-list>
-    </ion-step>
+    </ion-step> -->
 
     <!-- <ion-step label="Schools">
       
@@ -56,11 +57,11 @@
           <ion-label>{{'ionLabel.selectSolution' | translate}}</ion-label>
           <ion-searchbar debounce="500" (ionClear)="clearSolution()" autofocus (ionChange)="searchSolution($event)" placeholder="{{'message.startSearchSolution' | translate}}"></ion-searchbar>
          <ion-list margin-top *ngFor="let frameWork of listOfSolution">
-          <ion-item (click)="selectSolution(frameWork._id)" [ngClass]="{'active': frameWork._id === selectedFrameWork}">
-            <ion-icon name="list-box" item-start></ion-icon>
-            <h2>{{frameWork.name}} </h2>
-            <p>{{frameWork.description}}</p>
-            <button ion-button clear item-end (click)="showDetails(frameWork)">View</button>
+          <ion-item (click)="selectSolution(frameWork)" [ngClass]="{'active': frameWork._id === selectedFrameWork}">
+            <ion-icon name="list-box" item-start [ngClass]="{'whiteColor': frameWork._id === selectedFrameWork}"></ion-icon>
+            <h2 [ngClass]="{'whiteColor': frameWork._id === selectedFrameWork}">{{frameWork.name}} </h2>
+            <p [ngClass]="{'whiteColor': frameWork._id === selectedFrameWork}">{{frameWork.description}}</p>
+            <button ion-button clear item-end (click)="showDetails(frameWork)" [ngClass]="{'whiteColor': frameWork._id === selectedFrameWork}">View</button>
           </ion-item>
         </ion-list>
         <div *ngIf="listOfSolution?.length == 0"  class="_flex-box msgContainer">
@@ -82,7 +83,39 @@
         
       </div>
     </ion-step>
+    <ion-step label="Add Schools">
+        <div class="fixBox" *ngIf="entityList">
+            <ion-label>{{'ionLabel.selectSchool' | translate}}</ion-label>
+            <ion-searchbar debounce="500" (ionClear)="clearEntity()" autofocus (ionChange)="searchEntities($event ,'entity')" placeholder="{{'message.startSearchSchool' | translate}}"></ion-searchbar>
+           <ion-list margin-top *ngFor="let entity of entityList">
+              <ion-item >
+                  <ion-label  text-wrap>{{entity.name}}</ion-label>
+                  <ion-checkbox  color="dark" [checked]="entity.selected"
+                      (click)="countEntity(entity);entity.selected = !entity.selected"></ion-checkbox>
+              </ion-item>
+          </ion-list>
+          <div *ngIf="entityList?.length == 0"  class="_flex-box msgContainer">
+              {{'message.noSchoolFound' | translate}}
+          </div>
+        </div>
+        <ion-infinite-scroll [enabled]="!(this.entityList?.length === entityListTotalCount) && this.entityList?.length > 0" (ionInfinite)="doInfinite($event,entity)">
+            <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
+            </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
+
+
+        <ion-fab bottom right >
+            <!-- <button ion-fab mini color="secondary" (click)="addObservation()">
+              <ion-icon name="add"></ion-icon>
+            </button> -->
+            <button ion-fab mini (click)="saveDraft(); saveDraftType = 'normal'" >
+              <ion-icon name="md-document"></ion-icon>
+              <!-- {{'buttons.refresh' | translate}} -->
+            </button>
+          </ion-fab>
+    </ion-step>
   </ion-stepper>
+  
   <!-- <ion-infinite-scroll [enabled]="!(this.listOfSolution?.length === totalCount) && this.listOfSolution?.length > 0" (ionInfinite)="doInfinite($event)">
     <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more data...">
     </ion-infinite-scroll-content>
@@ -104,20 +137,24 @@
       </ion-col>
       <ion-col *ngIf="selectedIndex !== 2">
         <button ion-button full
-          (click)=" doAction() ; selectedIndex === 0  ? entityType ? stepper1.nextStep() : tmpFunc() : selectedFrameWork ? stepper1.nextStep() : tmpFunc() "
+          (click)=" doAction() ; selectedIndex === 0  ?  selectedFrameWork ? stepper1.nextStep() : tmpFunc() : addObservationForm.valid ? stepper1.nextStep() : tmpFunc() "
           class="btnText"
           >
-          {{'buttons.next' | translate}} 
+          {{'buttons.next' | translate}}
         </button>
       </ion-col>
       
       <ion-col *ngIf="selectedIndex === 2">
-          <button ion-button full (click)="saveDraft() ; saveDraftType = 'normal'" class="btnText">
+          <button ion-button full (click)="publishObservation()" class="btnText" [disabled]=" !(entityCount > 0)">
             <!-- <ion-icon name="pause" margin-right></ion-icon> -->
-            {{'buttons.save' | translate}}
+            {{'buttons.publish' | translate}}
           </button>
         </ion-col>
-        
+        <!-- <ion-col *ngIf="selectedIndex === 2">
+            <button ion-button full (click)="saveDraft() ; saveDraftType = 'normal'" class="btnText">
+              {{'buttons.save' | translate}}
+            </button>
+          </ion-col> -->
         <!-- <ion-col *ngIf="selectedIndex === 2">
             <button ion-button full (click)="addObservation()" class="btnText" >
               <ion-icon name="cloud-upload" margin-right></ion-icon>

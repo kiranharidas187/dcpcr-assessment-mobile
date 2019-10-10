@@ -72,7 +72,7 @@ export class ImageUploadComponent implements OnInit {
 
   constructor(private actionSheet: ActionSheetController,
     private camera: Camera,
-    private localStorage : LocalStorageProvider,
+    private localStorage: LocalStorageProvider,
     private file: File, private imgPicker: ImagePicker, private utils: UtilsProvider,
     private storage: Storage,
     private photoLibrary: PhotoLibrary, private platform: Platform,
@@ -81,7 +81,7 @@ export class ImageUploadComponent implements OnInit {
     private iosFilePicker: IOSFilePicker,
     private fileOpener: FileOpener,
     private fileChooser: FileChooser,
-    private androidPermissions : AndroidPermissions,
+    private androidPermissions: AndroidPermissions,
     private media: Media,
     private alertCtrl: AlertController) {
     console.log('Hello ImageUploadComponent Component');
@@ -244,12 +244,12 @@ export class ImageUploadComponent implements OnInit {
       if (this.imageFormats.indexOf(this.getExtensionFromName(fileName)) >= 0) {
         this.file.readAsDataURL(this.appFolderPath, fileName).then(data => {
           this.imageList.push({ data: data, imageName: fileName, extension: this.getExtensionFromName(fileName) });
-          this.setLocalDatas(fileName);        
+          this.setLocalDatas(fileName);
         }).catch(err => {
         })
       } else {
         this.imageList.push({ data: "", imageName: fileName, extension: this.getExtensionFromName(fileName) });
-        this.setLocalDatas(fileName);    
+        this.setLocalDatas(fileName);
         // this.updateLocalImageList();
       }
 
@@ -257,14 +257,14 @@ export class ImageUploadComponent implements OnInit {
     })
   }
 
-  setLocalDatas(fileName ) {
+  setLocalDatas(fileName) {
     this.datas.fileName.push(fileName);
     // if (!this.generalQuestion) {
     //   this.allLocalImageList[this.submissionId][this.evidenceId].push({ name: fileName, uploaded: false });
     // } else {
     //   this.allLocalImageList[this.submissionId].push({ name: fileName, uploaded: false });
     // }
-               this.updateLocalImageList();
+    this.updateLocalImageList();
   }
 
   getExtensionFromName(fileName) {
@@ -331,14 +331,14 @@ export class ImageUploadComponent implements OnInit {
   }
 
   deleteImageAlert(index) {
-    let translateObject ;
-          this.translate.get(['actionSheet.confirmDelete','actionSheet.confirmDeleteInstance','actionSheet.no','actionSheet.yes']).subscribe(translations =>{
-            translateObject = translations;
-            console.log(JSON.stringify(translations))
-          })
+    let translateObject;
+    this.translate.get(['actionSheet.confirmDelete', 'actionSheet.confirmDeleteInstance', 'actionSheet.no', 'actionSheet.yes']).subscribe(translations => {
+      translateObject = translations;
+      console.log(JSON.stringify(translations))
+    })
     let alert = this.alertCtrl.create({
       title: translateObject['actionSheet.confirmDelete'],
-      message:translateObject['actionSheet.confirmDeleteInstance'],
+      message: translateObject['actionSheet.confirmDeleteInstance'],
       buttons: [
         {
           text: translateObject['actionSheet.no'],
@@ -360,7 +360,7 @@ export class ImageUploadComponent implements OnInit {
   updateLocalImageList() {
     // this.localStorage.getLocalStorage(this.generalQuestion ? 'genericQuestionsImages' : 'allImageList').then( data =>{
     //   data = JSON.parse(data);
-      
+
     //   if(!this.generalQuestion)
     //   data[this.submissionId][this.evidenceId] = [...data[this.submissionId][this.evidenceId], ...this.allLocalImageList][this.submissionId][this.evidenceId] ;
     //   else 
@@ -385,112 +385,115 @@ export class ImageUploadComponent implements OnInit {
     // })
   }
 
-  previewFile(fileName,extension) {
-    this.fileOpener.open(this.appFolderPath+'/'+fileName, FILE_EXTENSION_HEADERS[extension])
+  previewFile(fileName, extension) {
+    this.fileOpener.open(this.appFolderPath + '/' + fileName, FILE_EXTENSION_HEADERS[extension])
       .then(() => console.log('File is opened'))
-      .catch(e =>{
+      .catch(e => {
         this.utils.openToast('No file readers available');
       })
   }
 
 
+  mediaObject;
 
   startRecord() {
-    
     if (this.platform.is('ios')) {
+      console.log("inside ios")
       this.file.checkDir(this.file.documentsDirectory, 'images').then(success => {
-        this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
-        this.filesPath = this.file.documentsDirectory +"images/"+ this.fileName;
-        this.audio = this.media.create(this.filesPath);
-        
-        this.audio.startRecord();
-        this.checkRecordMediaPermission();
-       
-        // this.startTimer();
-
-        // this.pushToFileList(this.fileName );
-        // this.datas.fileName.push(this.fileName);
-
+        this.fileName = 'record' + new Date().getDate() + new Date().getMonth() + new Date().getFullYear() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds() + '.mp3';
+        this.filesPath = this.file.documentsDirectory + "images/" + this.fileName;
+        this.file.createFile(this.file.tempDirectory, this.fileName, true).then(() => {
+          this.startTimer();
+          this.mediaObject = this.media.create(this.file.tempDirectory.replace(/^file:\/\//, '') + this.fileName);
+          this.mediaObject.startRecord();
+        });
 
       }).catch(err => {
         this.file.createDir(cordova.file.documentsDirectory, 'images', false).then(success => {
-          this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
-          this.filesPath = this.file.documentsDirectory+"images/" + this.fileName;
+          this.fileName = 'record' + new Date().getDate() + new Date().getMonth() + new Date().getFullYear() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds() + '.mp3';
+          this.filesPath = this.file.documentsDirectory + "images/" + this.fileName;
           this.audio = this.media.create(this.filesPath);
-        this.audio.startRecord();
-        this.checkRecordMediaPermission();
-       
-        // this.datas.fileName.push(this.fileName);
-
+          this.audio.startRecord();
+          this.startTimer();
         }, error => { })
       });
 
-      
+
     } else if (this.platform.is('android')) {
       this.file.checkDir(this.file.externalDataDirectory, 'images').then(success => {
-        this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
-        this.filesPath = this.file.externalDataDirectory +"images/"+ this.fileName;
-        console.log(this.filePath)
+        this.fileName = 'record' + new Date().getDate() + new Date().getMonth() + new Date().getFullYear() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds() + '.mp3';
+        this.filesPath = this.file.externalDataDirectory + "images/" + this.fileName;
         this.audio = this.media.create(this.filesPath);
-        
+        this.startTimer();
         this.audio.startRecord();
-        this.checkRecordMediaPermission();
-       
-        // this.datas.fileName.push(this.fileName);
-
       }).catch(err => {
-        console.log("No image File")
-
         this.file.createDir(cordova.file.externalDataDirectory, 'images', false).then(success => {
-          console.log("file created with name image")
-        this.fileName = 'record'+new Date().getDate()+new Date().getMonth()+new Date().getFullYear()+new Date().getHours()+new Date().getMinutes()+new Date().getSeconds()+'.mp3';
-        this.filesPath = this.file.externalDataDirectory+"images/"+this.fileName;
-        console.log(this.filePath)
-        this.audio = this.media.create(this.filesPath);
-        this.checkRecordMediaPermission();
-        // this.startTimer();
-        this.audio.startRecord();
-       
-        // this.datas.fileName.push(this.fileName);
-
+          this.fileName = 'record' + new Date().getDate() + new Date().getMonth() + new Date().getFullYear() + new Date().getHours() + new Date().getMinutes() + new Date().getSeconds() + '.mp3';
+          this.filesPath = this.file.externalDataDirectory + "images/" + this.fileName;
+          this.audio = this.media.create(this.filesPath);
+          this.startTimer();
+          this.audio.startRecord();
         }, error => { })
       });
 
-     
+
     }
   }
+
+
   startTimer() {
     this.recording = true;
-    if(this.recording){
-    this.interval = setInterval(() => {
-      if(this.timeLeft >= 0) {
-        this.timeLeft++;
-         console.log(this.timeLeft)
-        this.minutes = Math.ceil(this.timeLeft / 60) - 1;
-        this.seconds = Math.floor(this.timeLeft % 60)
-      } else {
-        this.timeLeft = 0;
-        this.minutes = 0;
-        this.seconds = 0;
-      }
-    },1000)
+    if (this.recording) {
+      this.interval = setInterval(() => {
+        if (this.timeLeft >= 0) {
+          this.timeLeft++;
+          console.log(this.timeLeft)
+          this.minutes = Math.ceil(this.timeLeft / 60) - 1;
+          this.seconds = Math.floor(this.timeLeft % 60)
+        } else {
+          this.timeLeft = 0;
+          this.minutes = 0;
+          this.seconds = 0;
+        }
+      }, 1000)
+    }
+
   }
- 
-  }
-  checkRecordMediaPermission(){
-    this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.RECORD_AUDIO).then(
-      result => {
-         result.hasPermission ? this.startTimer() :null;
-      }).catch();
+  checkRecordMediaPermission() {
+    const permissionsArray = [
+      this.androidPermissions.PERMISSION.READ_EXTERNAL_STORAGE,
+      this.androidPermissions.PERMISSION.WRITE_EXTERNAL_STORAGE,
+      this.androidPermissions.PERMISSION.RECORD_AUDIO
+    ]
+    this.androidPermissions.requestPermissions(permissionsArray).then(success => {
+      success.hasPermission ? this.startRecord() : this.utils.openToast("Please accept the permissions to use this feature")
+    }).catch(error => {
+      this.utils.openToast("Please accept the permissions to use this feature")
+    })
+
   }
   stopRecord() {
     this.recording = false;
     this.timeLeft = 0;
     this.minutes = 0;
     this.seconds = 0;
-    clearInterval(this.interval)
-    this.audio.stopRecord();
-    this.pushToFileList(this.fileName  );
+    clearInterval(this.interval);
+    if (this.isIos) {
+      this.mediaObject.stopRecord();
+      this.mediaObject.release();
+      this.file.copyFile(this.file.tempDirectory, this.fileName, this.appFolderPath, this.fileName).then(success => {
+        console.log("inside copy success")
+        this.file.removeFile(this.file.tempDirectory, this.fileName);
+        this.pushToFileList(this.fileName);
+      }, error => {
+      });
+
+    } else {
+      this.audio.stopRecord();
+      this.audio.release();
+      this.pushToFileList(this.fileName);
+
+    }
   }
 
 

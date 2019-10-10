@@ -91,6 +91,16 @@ import { PreviewPage } from '../pages/preview/preview';
 import { SubmissionListPage } from '../pages/submission-list/submission-list';
 import { ObservationServiceProvider } from '../providers/observation-service/observation-service';
 import { DownloadAndPreviewProvider } from '../providers/download-and-preview/download-and-preview';
+import { ObservationReportsPage } from '../pages/observation-reports/observation-reports';
+import { HighchartsChartModule } from 'highcharts-angular';
+import { UpdateTrackerProvider } from '../providers/update-tracker/update-tracker';
+import { RoleListingPage } from '../pages/role-listing/role-listing';
+import { ReportEntityListingPage } from '../pages/report-entity-listing/report-entity-listing';
+import { DashboardPage } from '../pages/dashboard/dashboard';
+import { TextToSpeech } from '@ionic-native/text-to-speech';
+import { TextToSpeechProvider } from '../providers/text-to-speech/text-to-speech';
+import { ProgramListingPage } from '../pages/program-listing/program-listing';
+import { ObservationEditPage } from '../pages/observation-edit/observation-edit';
 
 @NgModule({
   declarations: [
@@ -99,6 +109,7 @@ import { DownloadAndPreviewProvider } from '../providers/download-and-preview/do
     HomePage,
     AssessmentAboutPage,
     WelcomePage,
+    ProgramListingPage,
     InstitutionsEntityList,
     FaqPage,
     EntityProfileEditPage,
@@ -116,12 +127,18 @@ import { DownloadAndPreviewProvider } from '../providers/download-and-preview/do
     ProgramDetailsPage,
     HintPage,
     PreviewPage,
-    SubmissionListPage
+    SubmissionListPage,
+    ObservationReportsPage,
+    RoleListingPage,
+    ReportEntityListingPage,
+    DashboardPage,
+    ObservationEditPage
   ],
   imports: [
     BrowserAnimationsModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot(),
+    HighchartsChartModule,
     TranslateModule.forRoot(
       {
         loader: {
@@ -171,7 +188,14 @@ import { DownloadAndPreviewProvider } from '../providers/download-and-preview/do
     EntityListingPage,
     HintPage,
     PreviewPage,
-    SubmissionListPage
+    SubmissionListPage,
+    DashboardPage,
+    ProgramListingPage,
+
+    ObservationReportsPage,
+    RoleListingPage,
+    ReportEntityListingPage,
+    ObservationEditPage
   ],
   providers: [
     StatusBar,
@@ -218,10 +242,12 @@ import { DownloadAndPreviewProvider } from '../providers/download-and-preview/do
     IOSFilePicker,
     FileOpener,
     HintProvider,
-
+    TextToSpeech,
     Media,
     ObservationServiceProvider,
     DownloadAndPreviewProvider,
+    UpdateTrackerProvider,
+    TextToSpeechProvider,
   ]
 })
 export class AppModule { }

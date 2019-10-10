@@ -37,7 +37,7 @@ export class DateTypeComponent implements OnInit{
     // this.datePipe.transform(Date.now(), 'yyyy-MM-dd')
     // this.data.value = this.datePipe.transform(Date.now(), 'full');
     this.data.value = new Date(Date.now()).toISOString();
-
+    this.checkForValidation();
   }
 
   back() {

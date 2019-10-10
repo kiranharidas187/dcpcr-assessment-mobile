@@ -9,7 +9,7 @@ export class DynamicFormComponent implements OnChanges {
 
   @Input() formFields: any;
   @Input() form: FormGroup;
-
+  minDate = new Date().toJSON().split('T')[0];
   constructor() {
     console.log('Hello DynamicFormComponent Component');
   }

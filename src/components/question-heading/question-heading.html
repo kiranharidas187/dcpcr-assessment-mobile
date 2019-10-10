@@ -1,8 +1,25 @@
-<span class="flexbox">
-    <div class="noWrap">{{inputIndex}} .</div> 
+
+<!--<span class="flexbox">
+    <div class="noWrap" *ngIf="showQuestionNumber">{{inputIndex}} .</div> 
     <div padding-left>
       <div class="wrapText" *ngFor="let question of data.question"> 
       {{question}} 
       </div> 
     </div>
+</span> -->
+<span class="flexbox">
+  <div class="noWrap" *ngIf="showQuestionNumber">{{inputIndex}} .</div>
+  <div padding-left>
+    <div  *ngFor="let question of data.question;let first = first">
+      <div class=" _flex-box  _justify-content-space-between">
+        <div class="wrapText">{{question}}
+        
+        </div>
+        
+      </div>
+    </div>
+
+  </div>
+    <ion-icon *ngIf="!play" style="flex: 1" margin-left class="noWrap" name="volume-off" (click)="playQuestion(data.question[0],data.options,data.responseType)"></ion-icon>
+    <ion-icon *ngIf="play" style="flex: 1" margin-left class="noWrap" name="volume-up" (click)="pauseQuestion()"></ion-icon>
 </span>

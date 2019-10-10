@@ -23,6 +23,9 @@
         <matrix-type [inputIndex]="start + 1" [evidenceId]="selectedEvidenceId" [schoolId]="schoolId" [data]="question"
           [imageLocalCopyId]="localImageListKey" [submissionId] = "submissionId" (updateLocalData)="updateLocalData()" *ngSwitchCase="'matrix'">
         </matrix-type>
+        <page-question  [inputIndex]="start + 1" [evidenceId]="selectedEvidenceId" [schoolId]="schoolId" [data]="question"
+        [imageLocalCopyId]="localImageListKey" [submissionId] = "submissionId" (updateLocalData)="updateLocalData()" *ngSwitchCase="'pagequestions'">
+        </page-question>
         <slider [inputIndex]="start + 1" [evidenceId]="selectedEvidenceId" [submissionId]="submissionId" [schoolId]="schoolId" [data]="question"
           [imageLocalCopyId]="localImageListKey" *ngSwitchCase="'slider'"></slider>
       </ng-container>
@@ -30,5 +33,5 @@
   </div>
 
 </ion-content>
-<footer-buttons [isFirst]="!start" [isLast]="questions?.length === end" [completedQuestionCount]="countCompletedQuestion"  [questionCount] ="questions?.length"  (nextAction)="next()" (backAction)="back()">
+<footer-buttons [isFirst]="!start" [isSubmitted]="isCurrentEvidenceSubmitted" [isLast]="questions?.length === end" [completedQuestionCount]="countCompletedQuestion"  [questionCount] ="questions?.length"  (nextAction)="next()" (backAction)="back()">
 </footer-buttons>

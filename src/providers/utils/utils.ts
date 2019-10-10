@@ -10,7 +10,7 @@ import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LocalStorageProvider } from '../local-storage/local-storage';
 import { InAppBrowser, InAppBrowserOptions } from '@ionic-native/in-app-browser';
-
+ 
 @Injectable()
 export class UtilsProvider {
 
@@ -112,7 +112,20 @@ export class UtilsProvider {
     }
     return true
   }
+  isPageQuestionComplete(question){
+    for (const element of question.pageQuestions) {
 
+      console.log(element.responseType)
+      if(element.responseType.toLowerCase() === 'matrix'){
+        if(!this.isMatrixQuestionComplete(element)){
+          return  false;
+         }
+      }else if(!element.isCompleted){
+       return  false;
+      }
+    }
+    return true;
+  }
   enableGPSRequest() {
     this.locationAccuracy.canRequest().then((canRequest: boolean) => {
       if (canRequest) {
@@ -254,6 +267,7 @@ export class UtilsProvider {
     return imageArray
   }
 
+  
 
 
 }
